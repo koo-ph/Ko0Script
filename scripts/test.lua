@@ -11,7 +11,7 @@ return function(Window, Library)
     local Options = Library.Options
 
     -- ================= Tabs =================
-    local DemoTab = Window:AddTab("Demo", "flask")
+    local DemoTab = Window:AddTab("Demo", "flask-conical")
     local PlayerTab = Window:AddTab("Player", "user")
     local FunTab = Window:AddTab("Fun", "sparkles")
 
