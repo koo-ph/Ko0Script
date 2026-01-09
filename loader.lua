@@ -99,7 +99,7 @@ ThemeManager:ApplyToTab(SettingsTab)
 SaveManager:LoadAutoloadConfig()
 
 -- ========= GAME LOADER =========
--- local BASE = "https://raw.githubusercontent.com/YOU/Ko0-Hub/main/games/"
+local BASE = "https://raw.githubusercontent.com/YOU/Ko0-Hub/main/games/"
 
 -- local function loadGame()
 --     local ok, src = pcall(function()
@@ -116,3 +116,4 @@ SaveManager:LoadAutoloadConfig()
 
 --     loadstring(game:HttpGet(BASE .. "default.lua"))()(Window, Library)
 -- end
+loadstring(game:HttpGet(BASE .. "/scripts/" .. "test.lua"))()(Window,Library)
