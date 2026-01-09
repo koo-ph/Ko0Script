@@ -36,6 +36,26 @@ local Window = Library:CreateWindow({
     ShowCustomCursor = false,
 })
 
+-- ========= GAME LOADER =========
+local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/main/"
+local SCRIPTS = BASE .. "/scripts/"
+-- local function loadGame()
+--     local ok, src = pcall(function()
+--         return game:HttpGet(BASE .. game.PlaceId .. ".lua")
+--     end)
+
+--     if ok and src then
+--         local fn = loadstring(src)
+--         if fn then
+--             fn(Window, Library)
+--             return
+--         end
+--     end
+
+--     loadstring(game:HttpGet(BASE .. "default.lua"))()(Window, Library)
+-- end
+loadstring(game:HttpGet(SCRIPTS .. "test.lua"))()(Window,Library)
+
 -- ========= Settings tab (ONLY global tab) =========
 local SettingsTab = Window:AddTab("Settings", "settings")
 local MenuGroup = SettingsTab:AddLeftGroupbox("Menu")
@@ -97,23 +117,3 @@ SaveManager:SetFolder("Ko0-Hub/" .. game.GameId)
 SaveManager:BuildConfigSection(SettingsTab)
 ThemeManager:ApplyToTab(SettingsTab)
 SaveManager:LoadAutoloadConfig()
-
--- ========= GAME LOADER =========
-local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/main/"
-local SCRIPTS = BASE .. "/scripts/"
--- local function loadGame()
---     local ok, src = pcall(function()
---         return game:HttpGet(BASE .. game.PlaceId .. ".lua")
---     end)
-
---     if ok and src then
---         local fn = loadstring(src)
---         if fn then
---             fn(Window, Library)
---             return
---         end
---     end
-
---     loadstring(game:HttpGet(BASE .. "default.lua"))()(Window, Library)
--- end
-loadstring(game:HttpGet(SCRIPTS .. "test.lua"))()(Window,Library)
