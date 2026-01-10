@@ -51,7 +51,7 @@ local function loadGame()
             return
         end
     end
-
+    warn("Cannout find script for: " .. game.GameId)
 end
 loadGame()
 -- ========= Settings tab (ONLY global tab) =========
