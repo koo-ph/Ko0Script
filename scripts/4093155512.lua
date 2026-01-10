@@ -68,6 +68,42 @@ return function(Window, Library)
         end,
     })
 
+    Main_Combat:AddSlider("KA_Dist", {
+        Text = "Distance",
+        Default = 25,
+        Min = 1,
+        Max = 30,
+        Rounding = 1,
+        Compact = true,
+
+        Callback = function(Value)
+        end,
+
+        Tooltip = "Kill Aura Distance", -- Information shown when you hover over the slider
+        DisabledTooltip = "I am disabled!", -- Information shown when you hover over the slider while it's disabled
+
+        Disabled = false, -- Will disable the slider (true / false)
+        Visible = true, -- Will make the slider invisible (true / false)
+    })
+
+    Main_Combat:AddSlider("KA_Thresh", {
+        Text = "Max Enemies",
+        Default = 10,
+        Min = 1,
+        Max = 20,
+        Rounding = 1,
+        Compact = true,
+
+        Callback = function(Value)
+        end,
+
+        Tooltip = "Kill Aura Max Targets",
+        DisabledTooltip = "I am disabled!",
+        Disabled = false,
+        Visible = true,
+    })
+
+-- ================================================================== HEARTBEAT =================================================================== --
     KillAuraTick = 0
     HeartbeatConn = RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
