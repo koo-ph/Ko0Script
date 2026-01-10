@@ -41,17 +41,24 @@ local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/main/"
 local SCRIPTS = BASE .. "/scripts/"
 local function loadGame()
     local ok, src = pcall(function()
-        return game:HttpGet(SCRIPTS .. "test.lua")
+        return game:HttpGet(SCRIPTS .. game.GameId .. ".lua")
     end)
 
     if ok and src then
-        local fn = loadstring(src)
-        if fn then
-            fn(Window, Library)
+        local fn, err = loadstring(src)
+        if not fn then
+            warn("Failed to load:", err)
+            return
+        end
+
+        local success, innerFn = pcall(fn)  -- call the chunk first
+        if success and type(innerFn) == "function" then
+            innerFn(Window, Library)  -- now call the returned function
             return
         end
     end
-    warn("Cannout find script for: " .. game.GameId)
+
+    warn("Cannot find script for: " .. game.GameId)
 end
 loadGame()
 -- ========= Settings tab (ONLY global tab) =========
