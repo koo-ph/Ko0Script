@@ -7,53 +7,40 @@ local RunService = game:GetService("RunService")
 local Systems = ReplicatedStorage.Systems
 
 -- ================================================================== KillAura =================================================================== --
-local path = workspace:WaitForChild("Mobs")
-local function GetNearest(pos, count, list)
-    local nearest = {}           -- stores {mob = ..., dist2 = ...}
-
-    for _,mob in pairs(list:GetChildren()) do
-        local root = mob.PrimaryPart
-        if root then
-            local d2 = (root.Position - pos).Magnitude^2
-
-            if #nearest < count then
-                table.insert(nearest, {mob = mob, dist2 = d2})
-            else
-                -- find the farthest in current nearest
-                local worstIdx = 1
-                for i = 2, #nearest do
-                    if nearest[i].dist2 > nearest[worstIdx].dist2 then
-                        worstIdx = i
-                    end
-                end
-                if d2 < nearest[worstIdx].dist2 then
-                    nearest[worstIdx] = {mob = mob, dist2 = d2}
-                end
+local function GetNear(max_dist, max_count)
+    local path1 = workspace:WaitForChild("Mobs")
+    local candidates = {}
+    for _, enemy in pairs (path1:GetChildren()) do
+        if enemy.PrimaryPart then
+            local distance = (enemy.PrimaryPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+            if distance <= max_dist then
+                table.insert(candidates, {enemy = enemy, distance = distance})
             end
         end
     end
+    table.sort(candidates, function(a, b)
+        return a.distance < b.distance
+    end)
 
-    -- Extract only the mob objects
-    local result = {}
-    for _, v in ipairs(nearest) do
-        table.insert(result, v.mob)
+    local topTargets = {}
+    for i = 1, math.min(max_count, #candidates) do
+        table.insert(topTargets, candidates[i].enemy)
     end
-    return result
+
+    return topTargets
 end
 
 local function Damage(target)
     Systems.Combat.PlayerAttack:FireServer(target)
 end
 
-local function KillAura(max_count)
+local function KillAura(max_dist, max_count)
     local character = LocalPlayer.Character
     if not character or not character.PrimaryPart then return end
     local pos = character.PrimaryPart.Position
 
-    local targets = GetNearest(pos, max_count, path)
-    for _,target in pairs(targets) do
-        Damage(target)
-    end
+    local targets = GetNear(max_dist, max_count)
+    Damage(targets)
 end
 local function PlayerAura()
 end
@@ -87,7 +74,7 @@ return function(Window, Library)
             KillAuraTick += delta_time
             if KillAuraTick >= 0.1 then
                 KillAuraTick = 0
-                KillAura(5)
+                KillAura(10,5)
             end
         end
     end)
