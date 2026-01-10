@@ -110,7 +110,7 @@ return function(Window, Library)
             KillAuraTick += delta_time
             if KillAuraTick >= 0.25 then
                 KillAuraTick = 0
-                KillAura(10,5)
+                KillAura(Options.KA_Dist.Value, Options.KA_Thresh.Value)
             end
         end
     end)
