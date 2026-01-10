@@ -60,7 +60,6 @@ end
 
 -- ================================================================== UI =================================================================== --
 return function(Window, Library)
-    print("loaded")
     local Toggles = Library.Toggles
     local Options = Library.Options
     local HeartbeatConn
