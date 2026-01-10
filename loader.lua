@@ -41,7 +41,7 @@ local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/main/"
 local SCRIPTS = BASE .. "/scripts/"
 local function loadGame()
     local ok, src = pcall(function()
-        return game:HttpGet(SCRIPTS .. game.GameId .. ".lua")
+        return game:HttpGet(SCRIPTS .. "test.lua")
     end)
 
     if ok and src then
