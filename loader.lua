@@ -53,7 +53,7 @@ local function loadGame()
     end
 
 end
-
+loadGame()
 -- ========= Settings tab (ONLY global tab) =========
 local SettingsTab = Window:AddTab("Settings", "settings")
 local MenuGroup = SettingsTab:AddLeftGroupbox("Menu")
