@@ -72,7 +72,7 @@ return function(Window, Library)
     HeartbeatConn = RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
             KillAuraTick += delta_time
-            if KillAuraTick >= 0.1 then
+            if KillAuraTick >= 0.25 then
                 KillAuraTick = 0
                 KillAura(10,5)
             end
