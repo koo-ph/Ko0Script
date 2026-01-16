@@ -1,13 +1,13 @@
 -- ======================================================
 -- 🔮 Ko0 Hub Loader
 -- ======================================================
-queue_on_teleport("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/koo-ph/Ko0Script/refs/heads/main/loader.lua\"))()")
 getgenv().Ko0Hub = getgenv().Ko0Hub or {}
 
 if getgenv().Ko0Hub.Unload then
     pcall(getgenv().Ko0Hub.Unload)
 end
 
+queue_on_teleport("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/koo-ph/Ko0Script/refs/heads/main/loader.lua\"))()")
 -- ========= Services =========
 local MarketplaceService = game:GetService("MarketplaceService")
 
