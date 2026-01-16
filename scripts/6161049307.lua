@@ -12,7 +12,6 @@ local Remotes = ReplicatedStorage:WaitForChild("remotes")
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
 nearest = nil
-
 local function GetNear()
     local character = LocalPlayer.Character
     if not character then
@@ -123,17 +122,28 @@ return function(Window, Library)
             KA_Toggle_G += 1
             local myG = KA_Toggle_G
             if not Value then return end
-            task.spawn(function() 
+            task.spawn(function()
+                local refreshRate = 1 -- seconds
+                local elapsed = 0
+                local targets = {}
+                
                 while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
-                    for _,target in pairs(GetNear()) do
+                    elapsed += Options.KA_Speed.Value
+                    -- refresh targets only every `refreshRate` seconds
+                    if elapsed >= refreshRate then
+                        targets = GetNear()
+                        elapsed = 0
+                    end
+
+                    for _, target in ipairs(targets) do
                         KillAura(target)
                     end
+
                     task.wait(Options.KA_Speed.Value)
                 end
             end)
         end,
     })
-
     Main_Combat:AddSlider("KA_Speed", {
         Text = "KillAura Speed",
         Default = 0.3,
