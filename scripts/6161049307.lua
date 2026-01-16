@@ -11,53 +11,62 @@ local Remotes = ReplicatedStorage:WaitForChild("remotes")
 -- =================================================================== KILL AURA =================================================================== --
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
-local nearest
+nearest = nil
+
 local function GetNear()
-	local character = LocalPlayer.Character
-	if not character then
-		nearest = nil
-		return {}
-	end
+    local character = LocalPlayer.Character
+    if not character then
+        nearest = nil
+        return {}
+    end
 
-	local hrp = character:FindFirstChild("HumanoidRootPart")
-	if not hrp then
-		nearest = nil
-		return {}
-	end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then
+        nearest = nil
+        return {}
+    end
 
-	local distanceTable = {}
+    local targets = {}           -- store {Parent, distSq} temporarily
+    local nearestDistSq = math.huge
+    local nearestParent = nil
 
-	for _, humanoid in ipairs(workspace:GetDescendants()) do
-		if humanoid:IsA("Humanoid") then
-			local parent = humanoid.Parent
-			if parent and parent:FindFirstChild("Health") then
-				local primary = parent.PrimaryPart
-				if primary then
-					local distance = (primary.Position - hrp.Position).Magnitude
+    -- Iterate over all descendants (supports nested models)
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Humanoid") then
+            local parent = obj.Parent
+            local health = parent and parent:FindFirstChild("Health")
+            local primary = parent and parent.PrimaryPart
+            if health and primary and health.Value > 0 then
+                local diff = primary.Position - hrp.Position
+                local distSq = diff.X*diff.X + diff.Y*diff.Y + diff.Z*diff.Z
 
-					table.insert(distanceTable, {
-						Parent = parent,
-						Distance = distance
-					})
-				end
-			end
-		end
-	end
+                -- Keep track of nearest for quick access
+                if distSq < nearestDistSq then
+                    nearestDistSq = distSq
+                    nearestParent = parent
+                end
 
-	table.sort(distanceTable, function(a, b)
-		return a.Distance < b.Distance
-	end)
+                -- Store for sorting later
+                table.insert(targets, {Parent = parent, DistSq = distSq})
+            end
+        end
+    end
 
-	-- populate global nearest
-	nearest = distanceTable[1] and distanceTable[1].Parent or nil
+    -- Sort targets by distance squared (ascending)
+    table.sort(targets, function(a, b)
+        return a.DistSq < b.DistSq
+    end)
 
-	-- return only parents, sorted
-	local sortedParents = {}
-	for i, entry in ipairs(distanceTable) do
-		sortedParents[i] = entry.Parent
-	end
+    -- Update global nearest
+    nearest = nearestParent
 
-	return sortedParents
+    -- Return only parents, sorted
+    local sortedParents = {}
+    for i, entry in ipairs(targets) do
+        sortedParents[i] = entry.Parent
+    end
+
+    return sortedParents
 end
 
 local function StartSwing()
