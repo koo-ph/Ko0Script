@@ -4,7 +4,7 @@ local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
-local Remotes = ReplicatedStorage:FindFirstChild("remotes")
+local Remotes = ReplicatedStorage:WaitForChild("remotes")
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
