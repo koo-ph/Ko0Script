@@ -175,7 +175,7 @@ Main_Movement:AddToggle("WS_Toggle", {
         Max = 200,
         Rounding = 0,
         Suffix = " stud/s",
-        Compact = true,
+        Compact = false,
 
         Callback = function(Value)
 
