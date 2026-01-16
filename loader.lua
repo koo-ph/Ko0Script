@@ -62,7 +62,7 @@ local function loadGame()
 
         local success, innerFn = pcall(fn)  -- call the chunk first
         if success and type(innerFn) == "function" then
-            innerFn(Window, Library)  -- now call the returned function
+            innerFn(Hub.Window, Hub.Library)  -- now call the returned function
             return
         end
     end
@@ -71,14 +71,14 @@ local function loadGame()
 end
 loadGame()
 -- ========= Settings tab (ONLY global tab) =========
-local SettingsTab = Window:AddTab("Settings", "settings")
+local SettingsTab = Hub.Window:AddTab("Settings", "settings")
 local MenuGroup = SettingsTab:AddLeftGroupbox("Menu")
 
 MenuGroup:AddToggle("KeybindMenuOpen", {
-    Default = Library.KeybindFrame.Visible,
+    Default = Hub.Library.KeybindFrame.Visible,
     Text = "Open Keybind Menu",
     Callback = function(v)
-        Library.KeybindFrame.Visible = v
+        Hub.Library.KeybindFrame.Visible = v
     end,
 })
 
@@ -86,7 +86,7 @@ MenuGroup:AddToggle("ShowCustomCursor", {
     Text = "Custom Cursor",
     Default = true,
     Callback = function(v)
-        Library.ShowCustomCursor = v
+        Hub.Library.ShowCustomCursor = v
     end,
 })
 
@@ -95,7 +95,7 @@ MenuGroup:AddDropdown("NotificationSide", {
     Default = "Right",
     Text = "Notification Side",
     Callback = function(v)
-        Library:SetNotifySide(v)
+        Hub.Library:SetNotifySide(v)
     end,
 })
 
@@ -104,7 +104,7 @@ MenuGroup:AddDropdown("DPIDropdown", {
     Default = "100%",
     Text = "DPI Scale",
     Callback = function(v)
-        Library:SetDPIScale(tonumber(v:gsub("%%","")))
+        Hub.Library:SetDPIScale(tonumber(v:gsub("%%","")))
     end,
 })
 
@@ -116,11 +116,11 @@ MenuGroup:AddButton("Unload", function()
     Hub.Unload()
 end)
 
-Library.ToggleKeybind = Library.Options.MenuKeybind
+Library.ToggleKeybind = Hub.Library.Options.MenuKeybind
 
 -- ========= Managers =========
-ThemeManager:SetLibrary(Library)
-SaveManager:SetLibrary(Library)
+ThemeManager:SetLibrary(Hub.Library)
+SaveManager:SetLibrary(Hub.Library)
 
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({ "MenuKeybind" })
