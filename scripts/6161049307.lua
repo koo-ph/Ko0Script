@@ -141,6 +141,7 @@ return function(Window, Library)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura
             StartSwing()
+            StartBlock()
         end
     end)
 
