@@ -184,6 +184,7 @@ Main_Movement:AddToggle("WS_Toggle", {
 
         Disabled = not Toggles.WS_Toggle.Value, -- Will disable the slider (true / false)
         Visible = true, -- Will make the slider invisible (true / false)
+        HideMax = true,
     })
 -- ================================================================== Main_Visual =================================================================== --
 -- ================================================================= Main_Utility =================================================================== --
