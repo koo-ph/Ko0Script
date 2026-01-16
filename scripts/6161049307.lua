@@ -154,9 +154,9 @@ return function(Window, Library)
         Visible = true, -- Will make the slider invisible (true / false)
     })
 -- ================================================================= Main_Movement ================================================================== --
-Main_Combat:AddToggle("KA_Toggle", {
-        Text = "Kill Aura",
-        Tooltip = "Use Skill to Damage All",
+Main_Movement:AddToggle("WS_Toggle", {
+        Text = "Walk Speed",
+        Tooltip = "Change your character's walk speed",
         DisabledTooltip = "I am disabled!",
 
         Default = false,
@@ -165,18 +165,27 @@ Main_Combat:AddToggle("KA_Toggle", {
         Risky = true,
 
         Callback = function(Value)
-            KA_Toggle_G += 1
-            local myG = KA_Toggle_G
-            if not Value then return end
-            task.spawn(function() 
-                while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
-                    for _,target in pairs(GetNear()) do
-                        KillAura(target)
-                    end
-                    task.wait(Options.KA_Speed.Value)
-                end
-            end)
+            Options.WS_Speed:SetDisabled(not Value)
         end,
+    })
+    Main_Movement:AddSlider("WS_Speed", {
+        Text = "Walk Speed",
+        Default = 45,
+        Min = 16,
+        Max = 200,
+        Rounding = 0,
+        Suffix = "stud/s",
+        Compact = true,
+
+        Callback = function(Value)
+
+        end,
+
+        Tooltip = "Walk Speed Value", -- Information shown when you hover over the slider
+        DisabledTooltip = "I am disabled!", -- Information shown when you hover over the slider while it's disabled
+
+        Disabled = not Toggles.WS_Toggle.Value, -- Will disable the slider (true / false)
+        Visible = true, -- Will make the slider invisible (true / false)
     })
 -- ================================================================== Main_Visual =================================================================== --
 -- ================================================================= Main_Utility =================================================================== --
