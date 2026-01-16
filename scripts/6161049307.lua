@@ -164,6 +164,16 @@ Main_Movement:AddToggle("WS_Toggle", {
 
         Callback = function(Value)
             Options.WS_Speed:SetDisabled(not Value)
+            local char = LocalPlayer.Character
+            if not char then return end
+
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if not hum then return end
+            if Value then
+                hum.WalkSpeed = Options.WS_Speed.Value
+            else
+                hum.WalkSpeed = 16
+            end
         end,
     })
     Main_Movement:AddSlider("WS_Speed", {
@@ -216,15 +226,32 @@ Main_Utility:AddToggle("ASA_Toggle", {
             
         end,
     })
--- =================================================================== HEARTBEAT ==================================================================== --
+-- =================================================================== CONNECTIONS ==================================================================== --
     HeartbeatConn = RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura
             StartSwing()
             StartBlock()
         end
+        if Toggles.WS_Toggle.Value then
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = Options.WS_Speed.Value
+            end
+        end
     end)
 
+RespawnConn = LocalPlayer.CharacterAdded:Connect(function(char)
+    local hum = char:WaitForChild("Humanoid", 5)
+    if hum then
+        if Toggles.WS_Toggle.Value then
+            hum.WalkSpeed = Options.WS_Speed.Value
+        else
+            hum.WalkSpeed = 16
+        end
+    end
+end)
+
+-- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
         if HeartbeatConn then HeartbeatConn:Disconnect() HeartbeatConn = nil end
     end)
