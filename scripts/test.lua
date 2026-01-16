@@ -29,12 +29,13 @@ return function(Window, Library)
         Default = false,
         Callback = function(v)
             print("[DEMO] Toggle:", Toggles.DemoToggle.Value)
-            Toggles.HiddenToggle.Visible = v
+            Toggles.HiddenToggle:SetVisible(v)
         end
     })
 
     DemoBox:AddToggle("HiddenToggle", {
         Text = "Hidden Toggle",
+        Visible = false,
         Default = false,
         Callback = function(v)
             print("[DEMO] Hidden Toggle:", v)
