@@ -187,7 +187,35 @@ Main_Movement:AddToggle("WS_Toggle", {
         HideMax = true,
     })
 -- ================================================================== Main_Visual =================================================================== --
+Main_Visual:AddToggle("HT_Toggle", {
+        Text = "Highlight Target",
+        Tooltip = "Highlight the target",
+        DisabledTooltip = "I am disabled!",
+
+        Default = false,
+        Disabled = false,
+        Visible = true,
+        Risky = false,
+
+        Callback = function(Value)
+            
+        end,
+    })
 -- ================================================================= Main_Utility =================================================================== --
+Main_Utility:AddToggle("ASA_Toggle", {
+        Text = "Auto Select Abilities",
+        Tooltip = "Automatically select abilities",
+        DisabledTooltip = "I am disabled!",
+
+        Default = false,
+        Disabled = false,
+        Visible = true,
+        Risky = false,
+
+        Callback = function(Value)
+            
+        end,
+    })
 -- =================================================================== HEARTBEAT ==================================================================== --
     HeartbeatConn = RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
