@@ -144,8 +144,8 @@ return function(Window, Library)
 end
 
 --- THIS IS A FUNCTIONS
-local args = {
-	1
-}
-game:GetService("ReplicatedStorage"):WaitForChild("remotes"):WaitForChild("plrUpgrade"):FireServer(unpack(args))
+-- local args = {
+-- 	1
+-- }
+-- game:GetService("ReplicatedStorage"):WaitForChild("remotes"):WaitForChild("plrUpgrade"):FireServer(unpack(args))
 
