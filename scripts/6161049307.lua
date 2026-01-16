@@ -94,6 +94,8 @@ local function KillAura(target)
 end
 -- ================================================================== UI =================================================================== --
 return function(Window, Library)
+    version = "1.0.0"
+    print("Ko0 Hub: " .. version)
     local Toggles = Library.Toggles
     local Options = Library.Options
     local HeartbeatConn
