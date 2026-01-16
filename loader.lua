@@ -69,46 +69,30 @@ local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/main/"
 local SCRIPTS = BASE .. "/scripts/"
 local function loadGame()
     local ok, src = pcall(function()
-        return game:HttpGet(SCRIPTS .. game.GameId .. ".lua")
+        return game:HttpGet(SCRIPTS .. game.GameId .. ".lua?v=" .. CACHE_BUSTER)
     end)
 
     if ok and src then
-        local fn, err = loadstring(src)
-        if not fn then
-            warn("Failed to load GAME:", game.GameId, "Error:", err)
-            setclipboard("Failed to load GAME: " .. tostring(game.GameId) .. " | Error: " .. tostring(err))
-            return
-        end
-
-        local success, innerFn = pcall(fn)  -- call the chunk first
-        if success and type(innerFn) == "function" then
-            innerFn(Hub.Window, Hub.Library)  -- now call the returned function
-            return
-        end
-    end
-     -- Fallback to test.lua if the game-specific script failed
-    warn("Cannot find script for: " .. game.GameId)
-    warn("Now loading test.lua")
-
-    local testOk, testSrc = pcall(function()
-        return game:HttpGet(SCRIPTS .. "test.lua")
-    end)
-
-    if testOk and testSrc then
-        local testFn, testErr = loadstring(testSrc)
-        if testFn then
-            local success, innerFn = pcall(testFn)
+        local fn = loadstring(src)
+        if fn then
+            local success, innerFn = pcall(fn)
             if success and type(innerFn) == "function" then
                 innerFn(Hub.Window, Hub.Library)
                 return
-            else
-                warn("Failed to execute test.lua:", innerFn)
             end
-        else
-            warn("Failed to load test.lua:", testErr)
         end
-    else
-        warn("Failed to fetch test.lua")
+    end
+
+    warn("Cannot find script for:", game.GameId)
+    warn("Now loading test.lua")
+
+    local testSrc = game:HttpGet(SCRIPTS .. "test.lua?v=" .. CACHE_BUSTER)
+    local testFn = loadstring(testSrc)
+    if testFn then
+        local success, innerFn = pcall(testFn)
+        if success and type(innerFn) == "function" then
+            innerFn(Hub.Window, Hub.Library)
+        end
     end
 end
 loadGame()
