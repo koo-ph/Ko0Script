@@ -47,7 +47,8 @@ local function loadGame()
     if ok and src then
         local fn, err = loadstring(src)
         if not fn then
-            warn("Failed to load:", err)
+            warn("Failed to load GAME:", game.GameId, "Error:", err)
+            setclipboard("Failed to load GAME: " .. tostring(game.GameId) .. " | Error: " .. tostring(err))
             return
         end
 
