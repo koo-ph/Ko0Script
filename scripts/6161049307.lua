@@ -122,10 +122,10 @@ return function(Window, Library)
             KA_Toggle_G += 1
             local myG = KA_Toggle_G
             if not Value then return end
+            targets = GetNear()
             task.spawn(function()
                 local refreshRate = 1 -- seconds
                 local elapsed = 0
-                local targets = {}
                 
                 while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                     elapsed += Options.KA_Speed.Value
@@ -135,9 +135,7 @@ return function(Window, Library)
                         elapsed = 0
                     end
 
-                    for _, target in ipairs(targets) do
-                        KillAura(target)
-                    end
+                    KillAura(targets[1])
 
                     task.wait(Options.KA_Speed.Value)
                 end
