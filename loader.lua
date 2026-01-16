@@ -77,7 +77,7 @@ local function loadGame()
         if fn then
             local success, innerFn = pcall(fn)
             if success and type(innerFn) == "function" then
-                print("Loaded script for:", game.GameId, "HUB VERSION:", HUB_VERSION)
+                print("Loaded script for:", info.Name, "HUB VERSION:", HUB_VERSION)
                 innerFn(Hub.Window, Hub.Library)
                 return
             end
