@@ -162,19 +162,19 @@ Main_Movement:AddToggle("WS_Toggle", {
         Default = false,
         Disabled = false,
         Visible = true,
-        Risky = true,
+        Risky = false,
 
         Callback = function(Value)
             Options.WS_Speed:SetDisabled(not Value)
         end,
     })
     Main_Movement:AddSlider("WS_Speed", {
-        Text = "Walk Speed",
+        Text = "",
         Default = 45,
         Min = 16,
         Max = 200,
         Rounding = 0,
-        Suffix = "stud/s",
+        Suffix = " stud/s",
         Compact = true,
 
         Callback = function(Value)
@@ -182,7 +182,7 @@ Main_Movement:AddToggle("WS_Toggle", {
         end,
 
         Tooltip = "Walk Speed Value", -- Information shown when you hover over the slider
-        DisabledTooltip = "I am disabled!", -- Information shown when you hover over the slider while it's disabled
+        DisabledTooltip = "Enable Walk Speed!", -- Information shown when you hover over the slider while it's disabled
 
         Disabled = not Toggles.WS_Toggle.Value, -- Will disable the slider (true / false)
         Visible = true, -- Will make the slider invisible (true / false)
