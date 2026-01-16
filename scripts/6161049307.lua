@@ -132,7 +132,7 @@ return function(Window, Library)
     Main_Combat:AddSlider("KA_Speed", {
         Text = "KillAura Speed",
         Default = 0.3,
-        Min = 0.1,
+        Min = 0.01,
         Max = 2,
         Rounding = 2,
         Compact = true,
