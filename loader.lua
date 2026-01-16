@@ -1,6 +1,26 @@
 -- ======================================================
 -- 🔮 Ko0 Hub Loader
 -- ======================================================
+local COMMIT_API =
+    "https://api.github.com/repos/koo-ph/Ko0Script/commits/main"
+
+local CACHE_BUSTER = tostring(os.time())
+
+local function GetVersion()
+    local ok, res = pcall(function()
+        return game:HttpGet(COMMIT_API .. "?v=" .. CACHE_BUSTER)
+    end)
+
+    if not ok or not res then return nil end
+
+    -- Extract full SHA, then trim to 7 chars
+    local sha = res:match('"sha"%s*:%s*"([a-f0-9]+)"')
+    if sha then
+        return sha:sub(1, 7)
+    end
+end
+local HUB_VERSION = getRemoteCommitSHA() or "unknown"
+
 getgenv().Ko0Hub = getgenv().Ko0Hub or {}
 local Hub = getgenv().Ko0Hub
 
@@ -137,6 +157,9 @@ MenuGroup:AddLabel("Menu bind")
 MenuGroup:AddButton("Unload", function()
     Hub.Unload()
 end)
+MenuGroup:AddDivider()
+MenuGroup:AddLabel("Hub Version:")
+    :AddLabel(HUB_VERSION)
 
 Library.ToggleKeybind = Hub.Library.Options.MenuKeybind
 
