@@ -164,16 +164,6 @@ Main_Movement:AddToggle("WS_Toggle", {
 
         Callback = function(Value)
             Options.WS_Speed:SetDisabled(not Value)
-            local char = LocalPlayer.Character
-            if not char then return end
-
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            if not hum then return end
-            if Value then
-                hum.WalkSpeed = Options.WS_Speed.Value
-            else
-                hum.WalkSpeed = 16
-            end
         end,
     })
     Main_Movement:AddSlider("WS_Speed", {
@@ -239,17 +229,6 @@ Main_Utility:AddToggle("ASA_Toggle", {
             end
         end
     end)
-
-RespawnConn = LocalPlayer.CharacterAdded:Connect(function(char)
-    local hum = char:WaitForChild("Humanoid", 5)
-    if hum then
-        if Toggles.WS_Toggle.Value then
-            hum.WalkSpeed = Options.WS_Speed.Value
-        else
-            hum.WalkSpeed = 16
-        end
-    end
-end)
 
 -- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
