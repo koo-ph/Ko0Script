@@ -92,7 +92,11 @@ local function KillAura(target)
         0
     )
 end
--- ================================================================== UI =================================================================== --
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
+-- =================================================================== INTERFACE =================================================================== --
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
 return function(Window, Library)
     version = "1.0.0"
     print("Ko0 Hub: " .. version)
@@ -102,7 +106,10 @@ return function(Window, Library)
 
     local Main = Window:AddTab("Main", "house")
     local Main_Combat = Main:AddLeftGroupbox("Combat", "swords")
-
+    local Main_Movement = Main:AddLeftGroupbox("Movement", "footprints")
+    local Main_Visual = Main:AddRightGroupbox("Visual", "eye")
+    local Main_Utility = Main:AddRightGroupbox("Utility", "target")
+-- ================================================================== Main_Combat =================================================================== --
     local KA_Toggle_G = 0
     Main_Combat:AddToggle("KA_Toggle", {
         Text = "Kill Aura",
@@ -146,8 +153,34 @@ return function(Window, Library)
         Disabled = false, -- Will disable the slider (true / false)
         Visible = true, -- Will make the slider invisible (true / false)
     })
+-- ================================================================= Main_Movement ================================================================== --
+Main_Combat:AddToggle("KA_Toggle", {
+        Text = "Kill Aura",
+        Tooltip = "Use Skill to Damage All",
+        DisabledTooltip = "I am disabled!",
 
--- ================================================================== HEARTBEAT =================================================================== --
+        Default = false,
+        Disabled = false,
+        Visible = true,
+        Risky = true,
+
+        Callback = function(Value)
+            KA_Toggle_G += 1
+            local myG = KA_Toggle_G
+            if not Value then return end
+            task.spawn(function() 
+                while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
+                    for _,target in pairs(GetNear()) do
+                        KillAura(target)
+                    end
+                    task.wait(Options.KA_Speed.Value)
+                end
+            end)
+        end,
+    })
+-- ================================================================== Main_Visual =================================================================== --
+-- ================================================================= Main_Utility =================================================================== --
+-- =================================================================== HEARTBEAT ==================================================================== --
     HeartbeatConn = RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura

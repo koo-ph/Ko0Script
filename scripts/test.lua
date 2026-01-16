@@ -28,7 +28,8 @@ return function(Window, Library)
         Text = "Demo Toggle",
         Default = false,
         Callback = function(v)
-            print("[DEMO] Toggle:", v)
+            print("[DEMO] Toggle:", Toggles.DemoToggle.Value)
+            print(Toggles.DemoToggle.Visible)
         end
     })
 

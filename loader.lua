@@ -66,7 +66,7 @@ local function loadGame()
             return
         end
     end
-
+    return game:HttpGet(SCRIPTS .. "test.lua")
     warn("Cannot find script for: " .. game.GameId)
 end
 loadGame()
