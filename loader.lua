@@ -159,7 +159,7 @@ MenuGroup:AddButton("Unload", function()
 end)
 MenuGroup:AddDivider()
 MenuGroup:AddLabel("Hub Version:")
-    :AddLabel(HUB_VERSION)
+MenuGroup:AddLabel(HUB_VERSION)
 
 Library.ToggleKeybind = Hub.Library.Options.MenuKeybind
 
