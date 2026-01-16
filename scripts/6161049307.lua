@@ -233,6 +233,7 @@ Main_Utility:AddToggle("ASA_Toggle", {
 -- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
         if HeartbeatConn then HeartbeatConn:Disconnect() HeartbeatConn = nil end
+        KA_Toggle_G = nil
     end)
 end
 
