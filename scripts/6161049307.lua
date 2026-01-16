@@ -135,7 +135,9 @@ return function(Window, Library)
                         elapsed = 0
                     end
 
-                    KillAura(targets[1])
+                    for _, target in ipairs(targets) do
+                        KillAura(target)
+                    end
 
                     task.wait(Options.KA_Speed.Value)
                 end
