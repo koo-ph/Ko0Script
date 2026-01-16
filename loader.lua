@@ -65,11 +65,11 @@ Hub.Window = Library:CreateWindow({
 })
 
 -- ========= GAME LOADER =========
-local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/main/"
+local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/" .. GetVersion()
 local SCRIPTS = BASE .. "/scripts/"
 local function loadGame()
     local ok, src = pcall(function()
-        return game:HttpGet(SCRIPTS .. game.GameId .. ".lua?v=" .. CACHE_BUSTER)
+        return game:HttpGet(SCRIPTS .. game.GameId .. ".lua")
     end)
 
     if ok and src then
@@ -86,7 +86,7 @@ local function loadGame()
     warn("Cannot find script for:", game.GameId)
     warn("Now loading test.lua")
 
-    local testSrc = game:HttpGet(SCRIPTS .. "test.lua?v=" .. CACHE_BUSTER)
+    local testSrc = game:HttpGet(SCRIPTS .. "test.lua")
     local testFn = loadstring(testSrc)
     if testFn then
         local success, innerFn = pcall(testFn)
