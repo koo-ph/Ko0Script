@@ -2,15 +2,18 @@
 -- 🔮 Ko0 Hub Loader
 -- ======================================================
 getgenv().Ko0Hub = getgenv().Ko0Hub or {}
-getgenv().Ko0TP = getgenv().Ko0TP or false
-if getgenv().Ko0Hub.Unload then
-    pcall(getgenv().Ko0Hub.Unload)
+local Hub = getgenv().Ko0Hub
+
+if Hub.Unload then
+    pcall(Hub.Unload)
 end
 
-if not getgenv().Ko0TP then
-    getgenv().Ko0TP = true
-    queue_on_teleport("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/koo-ph/Ko0Script/refs/heads/main/loader.lua\"))()")
+-- Prevent duplicate window creation
+if Hub.Window and Hub.Window.Open then
+    warn("Ko0 Hub already loaded!")
+    return
 end
+
 -- ========= Services =========
 local MarketplaceService = game:GetService("MarketplaceService")
 
@@ -22,15 +25,17 @@ local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
 
 Library.ForceCheckbox = false
 
-getgenv().Ko0Hub.Library = Library
-getgenv().Ko0Hub.Unload = function()
-    Library:Unload()
+Hub.Library = Library
+Hub.Unload = function()
+    if Hub.Library then
+        Hub.Library:Unload()
+    end
+    Hub.Window = nil
 end
-
 -- ========= Window =========
 local info = MarketplaceService:GetProductInfo(game.PlaceId)
 
-local Window = Library:CreateWindow({
+Hub.Window = Library:CreateWindow({
     Title = "🔮 Ko0 Hub 🔮",
     Footer = info.Name,
     Center = true,
@@ -108,7 +113,7 @@ MenuGroup:AddLabel("Menu bind")
     :AddKeyPicker("MenuKeybind", { Default = "Insert", NoUI = true })
 
 MenuGroup:AddButton("Unload", function()
-    Library:Unload()
+    Hub.Unload()
 end)
 
 Library.ToggleKeybind = Library.Options.MenuKeybind
@@ -126,3 +131,12 @@ SaveManager:SetFolder("Ko0-Hub/" .. game.GameId)
 SaveManager:BuildConfigSection(SettingsTab)
 ThemeManager:ApplyToTab(SettingsTab)
 SaveManager:LoadAutoloadConfig()
+
+getgenv().Ko0TP = getgenv().Ko0TP or false
+if not getgenv().Ko0TP then
+    getgenv().Ko0TP = true
+    queue_on_teleport([[
+        getgenv().Ko0TP = false
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/koo-ph/Ko0Script/refs/heads/main/loader.lua"))()
+    ]])
+end
