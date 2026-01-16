@@ -137,6 +137,6 @@ if not getgenv().Ko0TP then
     getgenv().Ko0TP = true
     queue_on_teleport([[
         getgenv().Ko0TP = false
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/koo-ph/Ko0Script/refs/heads/main/loader.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/koo-ph/Ko0Script/main/loader.lua"))()
     ]])
 end
