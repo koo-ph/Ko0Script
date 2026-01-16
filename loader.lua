@@ -66,9 +66,30 @@ local function loadGame()
             return
         end
     end
-    return game:HttpGet(SCRIPTS .. "test.lua")
+     -- Fallback to test.lua if the game-specific script failed
     warn("Cannot find script for: " .. game.GameId)
     warn("Now loading test.lua")
+
+    local testOk, testSrc = pcall(function()
+        return game:HttpGet(SCRIPTS .. "test.lua")
+    end)
+
+    if testOk and testSrc then
+        local testFn, testErr = loadstring(testSrc)
+        if testFn then
+            local success, innerFn = pcall(testFn)
+            if success and type(innerFn) == "function" then
+                innerFn(Hub.Window, Hub.Library)
+                return
+            else
+                warn("Failed to execute test.lua:", innerFn)
+            end
+        else
+            warn("Failed to load test.lua:", testErr)
+        end
+    else
+        warn("Failed to fetch test.lua")
+    end
 end
 loadGame()
 -- ========= Settings tab (ONLY global tab) =========
