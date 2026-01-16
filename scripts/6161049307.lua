@@ -87,32 +87,38 @@ return function(Window, Library)
     local Main_Visual = Main:AddRightGroupbox("Visual", "eye")
     local Main_Utility = Main:AddRightGroupbox("Utility", "target")
 -- ================================================================== Main_Combat =================================================================== --
-    local KA_Toggle_G = 0
-    Main_Combat:AddToggle("KA_Toggle", {
-        Text = "Kill Aura",
-        Tooltip = "Use Skill to Damage All",
-        DisabledTooltip = "I am disabled!",
+local KA_Toggle_G = 0
+Main_Combat:AddToggle("KA_Toggle", {
+    Text = "Kill Aura",
+    Tooltip = "Use Skill to Damage All",
+    DisabledTooltip = "I am disabled!",
 
-        Default = false,
-        Disabled = false,
-        Visible = true,
-        Risky = true,
+    Default = false,
+    Disabled = false,
+    Visible = true,
+    Risky = true,
 
-        Callback = function(Value)
-            KA_Toggle_G += 1
-            local myG = KA_Toggle_G
-            if not Value then return end
-            task.spawn(function()
-                while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
-                    for _, target in ipairs(GetNear()) do
-                        KillAura(target)
-                    end
-
-                    task.wait(Options.KA_Speed.Value)
+    Callback = function(Value)
+        KA_Toggle_G += 1
+        local myG = KA_Toggle_G
+        if not Value then return end
+        task.spawn(function()
+            while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
+                -- Defensive guard: ensure GetNear exists and returns a table
+                local nearby = type(GetNear) == "function" and GetNear() or {}
+                if type(nearby) ~= "table" then
+                    nearby = {}
                 end
-            end)
-        end,
-    })
+
+                for _, target in ipairs(nearby) do
+                    KillAura(target)
+                end
+
+                task.wait(Options.KA_Speed.Value)
+            end
+        end)
+    end,
+})
     Main_Combat:AddSlider("KA_Speed", {
         Text = "KillAura Speed",
         Default = 0.3,
