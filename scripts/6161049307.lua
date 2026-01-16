@@ -66,6 +66,12 @@ local function StartSwing()
 
     swing:FireServer()
 end
+local function StartBlock()
+    local block = Remotes:FindFirstChild("block")
+    if not block then return end
+
+    block:FireServer(true)
+end
 local function KillAura(target)
     local onHit = Remotes:FindFirstChild("onHit")
     if not onHit or not target:FindFirstChild("Humanoid") then return end
