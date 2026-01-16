@@ -19,7 +19,7 @@ local function GetVersion()
         return sha:sub(1, 7)
     end
 end
-local HUB_VERSION = getRemoteCommitSHA() or "unknown"
+local HUB_VERSION = GetVersion() or "unknown"
 
 getgenv().Ko0Hub = getgenv().Ko0Hub or {}
 local Hub = getgenv().Ko0Hub
