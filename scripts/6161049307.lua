@@ -1,5 +1,6 @@
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -12,60 +13,39 @@ local Remotes = ReplicatedStorage:WaitForChild("remotes")
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
 nearest = nil
-local function GetNear()
+local function GetNear(tagName)
     local character = LocalPlayer.Character
     if not character then
         nearest = nil
-        return {}
+        return nil
     end
 
     local hrp = character:FindFirstChild("HumanoidRootPart")
     if not hrp then
         nearest = nil
-        return {}
+        return nil
     end
 
-    local targets = {}           -- store {Parent, distSq} temporarily
+    local nearestTarget = nil
     local nearestDistSq = math.huge
-    local nearestParent = nil
 
-    -- Iterate over all descendants (supports nested models)
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("Humanoid") then
-            local parent = obj.Parent
-            local health = parent and parent:FindFirstChild("Health")
-            local primary = parent and parent.PrimaryPart
-            if health and primary and health.Value > 0 then
-                local diff = primary.Position - hrp.Position
-                local distSq = diff.X*diff.X + diff.Y*diff.Y + diff.Z*diff.Z
+    local taggedObjects = CollectionService:GetTagged(tagName or "enemy")
 
-                -- Keep track of nearest for quick access
-                if distSq < nearestDistSq then
-                    nearestDistSq = distSq
-                    nearestParent = parent
-                end
+    for _, enemy in ipairs(taggedObjects) do
+        local primary = enemy.PrimaryPart
+        if primary then
+            local diff = primary.Position - hrp.Position
+            local distSq = diff.X*diff.X + diff.Y*diff.Y + diff.Z*diff.Z
 
-                -- Store for sorting later
-                table.insert(targets, {Parent = parent, DistSq = distSq})
+            if distSq < nearestDistSq then
+                nearestDistSq = distSq
+                nearestTarget = enemy
             end
         end
     end
 
-    -- Sort targets by distance squared (ascending)
-    table.sort(targets, function(a, b)
-        return a.DistSq < b.DistSq
-    end)
-
-    -- Update global nearest
-    nearest = nearestParent
-
-    -- Return only parents, sorted
-    local sortedParents = {}
-    for i, entry in ipairs(targets) do
-        sortedParents[i] = entry.Parent
-    end
-
-    return sortedParents
+    nearest = nearestTarget
+    return taggedObjects
 end
 
 local function StartSwing()
@@ -122,20 +102,9 @@ return function(Window, Library)
             KA_Toggle_G += 1
             local myG = KA_Toggle_G
             if not Value then return end
-            targets = GetNear()
             task.spawn(function()
-                local refreshRate = 1 -- seconds
-                local elapsed = 0
-                
                 while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
-                    elapsed += Options.KA_Speed.Value
-                    -- refresh targets only every `refreshRate` seconds
-                    if elapsed >= refreshRate then
-                        targets = GetNear()
-                        elapsed = 0
-                    end
-
-                    for _, target in ipairs(targets) do
+                    for _, target in ipairs(GetNear()) do
                         KillAura(target)
                     end
 
