@@ -68,6 +68,7 @@ local function loadGame()
     end
     return game:HttpGet(SCRIPTS .. "test.lua")
     warn("Cannot find script for: " .. game.GameId)
+    warn("Now loading test.lua")
 end
 loadGame()
 -- ========= Settings tab (ONLY global tab) =========
