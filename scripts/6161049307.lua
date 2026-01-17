@@ -108,7 +108,7 @@ TargetHandlers["Korth"] = function(target)
 
     local health = book:FindFirstChild("Health")
     local target_health = target:FindFirstChild("Health")
-    if health and health.Value > 0 and target_health and target_health.Value > 0 then
+    if health and health.Value ==0 and target_health and target_health.Value > 0 then
         Damage(target)
     end
 end
