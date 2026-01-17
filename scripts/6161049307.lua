@@ -207,12 +207,20 @@ return function(Window, Library)
         return task
     end
     function Worker:StopAll()
-        for _, task in ipairs(self._tasks) do
-            if typeof(task) == "RBXScriptConnection" then
+        for i = #self._tasks, 1, -1 do
+            local task = self._tasks[i]
+
+            local t = typeof(task)
+            if t == "RBXScriptConnection" then
                 if task.Connected then
                     task:Disconnect()
                 end
+            elseif t == "function" then
+                task()
+            elseif t == "Instance" then
+                task:Destroy()
             end
+
             self._tasks[i] = nil
         end
     end
