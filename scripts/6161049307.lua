@@ -227,7 +227,6 @@ return function(Window, Library)
     local worker = Worker.new()
     worker:Start(RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
-            print("Doing KillAura")
             -- Do KillAura
             StartSwing()
             StartBlock()
