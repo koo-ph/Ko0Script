@@ -60,6 +60,19 @@ local function StartBlock()
 
     block:FireServer(true)
 end
+
+local function Damage(target)
+    local onHit = Remotes:FindFirstChild("onHit")
+    if not onHit or not target:FindFirstChild("Humanoid") then return end
+
+    onHit:FireServer(
+        target.Humanoid,
+        9999,
+        {},
+        0
+    )
+end
+
 local TargetHandlers = {}
 TargetHandlers["BookHand"] = function(target)
     -- Find Korth in the targets table
@@ -78,18 +91,6 @@ TargetHandlers["BookHand"] = function(target)
     if hadEntrance and health and health.Value > 0 then
         Damage(target)
     end
-end
-
-local function Damage(target)
-    local onHit = Remotes:FindFirstChild("onHit")
-    if not onHit or not target:FindFirstChild("Humanoid") then return end
-
-    onHit:FireServer(
-        target.Humanoid,
-        9999,
-        {},
-        0
-    )
 end
 local function KillAura(target)
     if not target or not target.Parent then return end
