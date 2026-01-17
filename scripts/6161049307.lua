@@ -94,6 +94,24 @@ TargetHandlers["BookHand"] = function(target)
         Damage(target)
     end
 end
+TargetHandlers["Korth"] = function(target)
+    -- Find Korth in the targets table
+    local book
+    for t in pairs(targets) do
+        if t.Name == "BookHand" then
+            book = t
+            break
+        end
+    end
+
+    if not book then return end
+
+    local health = book:FindFirstChild("Health")
+    local target_health = target:FindFirstChild("Health")
+    if health and health.Value > 0 and target_health and target_health.Value > 0 then
+        Damage(target)
+    end
+end
 local function KillAura(target)
     if not target or not target.Parent then return end
 
