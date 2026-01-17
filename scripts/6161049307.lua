@@ -104,8 +104,6 @@ return function(Window, Library)
         if not Value then return end
         task.spawn(function()
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
-                print("targets:", #targets)
-                -- Defensive guard: ensure GetNear exists and returns a table
                 for target in pairs(targets) do
                     KillAura(target)
                 end
