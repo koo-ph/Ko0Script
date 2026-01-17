@@ -105,6 +105,7 @@ return function(Window, Library)
         task.spawn(function()
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                 for target in pairs(targets) do
+                    if target.Name == "LocalKorth" then continue end
                     KillAura(target)
                 end
 
