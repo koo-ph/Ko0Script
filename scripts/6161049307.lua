@@ -88,7 +88,8 @@ TargetHandlers["BookHand"] = function(target)
 
     local hadEntrance = korth:GetAttribute("hadEntrance")
     local health = korth:FindFirstChild("Health")
-    if hadEntrance and health and health.Value > 0 then
+    local alive = korth:FindFirstChild("alive")
+    if hadEntrance and health and health.Value > 0 and alive and alive.Value then
         Damage(target)
     end
 end
