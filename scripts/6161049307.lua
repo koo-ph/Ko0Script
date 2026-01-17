@@ -245,7 +245,7 @@ return function(Window, Library)
     end))
 -- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
-        worker.StopAll()
+        worker:StopAll()
         KA_Toggle_G = nil
     end)
 end
