@@ -30,7 +30,7 @@ local function GetNear(tagName, enemies)
     local nearestTarget = nil
     local nearestDistSq = math.huge
 
-    for _, enemy in ipairs(enemies) do
+    for enemy in pairs(enemies) do
         local primary = enemy.PrimaryPart
         if primary then
             local diff = primary.Position - hrp.Position
@@ -106,7 +106,7 @@ return function(Window, Library)
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                 print("targets:", #targets)
                 -- Defensive guard: ensure GetNear exists and returns a table
-                for _, target in ipairs(targets) do
+                for target in pairs(targets) do
                     KillAura(target)
                 end
 
