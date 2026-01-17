@@ -76,7 +76,7 @@ TargetHandlers["BookHand"] = function(target)
     local hadEntrance = korth:GetAttribute("hadEntrance")
     local health = korth:FindFirstChild("Health")
     if hadEntrance and health and health.Value > 0 then
-        KillAura(target)
+        Damage(target)
     end
 end
 
