@@ -13,7 +13,8 @@ local Remotes = ReplicatedStorage:WaitForChild("remotes")
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
 nearest = nil
-local function GetNear(tagName)
+targets = {}
+local function GetNear(tagName, enemies)
     local character = LocalPlayer.Character
     if not character then
         nearest = nil
@@ -29,9 +30,7 @@ local function GetNear(tagName)
     local nearestTarget = nil
     local nearestDistSq = math.huge
 
-    local taggedObjects = CollectionService:GetTagged(tagName or "enemy")
-
-    for _, enemy in ipairs(taggedObjects) do
+    for _, enemy in ipairs(enemies) do
         local primary = enemy.PrimaryPart
         if primary then
             local diff = primary.Position - hrp.Position
@@ -45,9 +44,10 @@ local function GetNear(tagName)
     end
 
     nearest = nearestTarget
-    return taggedObjects
 end
-
+for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
+    targets[inst] = true
+end
 local function StartSwing()
     local swing = Remotes:FindFirstChild("swing")
     if not swing then return end
@@ -87,8 +87,8 @@ return function(Window, Library)
     local Main_Visual = Main:AddRightGroupbox("Visual", "eye")
     local Main_Utility = Main:AddRightGroupbox("Utility", "target")
 -- ================================================================== Main_Combat =================================================================== --
-local KA_Toggle_G = 0
-Main_Combat:AddToggle("KA_Toggle", {
+    local KA_Toggle_G = 0
+    Main_Combat:AddToggle("KA_Toggle", {
     Text = "Kill Aura",
     Tooltip = "Use Skill to Damage All",
     DisabledTooltip = "I am disabled!",
@@ -105,12 +105,7 @@ Main_Combat:AddToggle("KA_Toggle", {
         task.spawn(function()
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                 -- Defensive guard: ensure GetNear exists and returns a table
-                local nearby = type(GetNear) == "function" and GetNear() or {}
-                if type(nearby) ~= "table" then
-                    nearby = {}
-                end
-
-                for _, target in ipairs(nearby) do
+                for _, target in ipairs(targets) do
                     KillAura(target)
                 end
 
@@ -118,7 +113,7 @@ Main_Combat:AddToggle("KA_Toggle", {
             end
         end)
     end,
-})
+    })
     Main_Combat:AddSlider("KA_Speed", {
         Text = "KillAura Speed",
         Default = 0.3,
@@ -137,7 +132,7 @@ Main_Combat:AddToggle("KA_Toggle", {
         Visible = true, -- Will make the slider invisible (true / false)
     })
 -- ================================================================= Main_Movement ================================================================== --
-Main_Movement:AddToggle("WS_Toggle", {
+    Main_Movement:AddToggle("WS_Toggle", {
         Text = "Walk Speed",
         Tooltip = "Change your character's walk speed",
         DisabledTooltip = "I am disabled!",
@@ -172,7 +167,7 @@ Main_Movement:AddToggle("WS_Toggle", {
         HideMax = true,
     })
 -- ================================================================== Main_Visual =================================================================== --
-Main_Visual:AddToggle("HT_Toggle", {
+    Main_Visual:AddToggle("HT_Toggle", {
         Text = "Highlight Target",
         Tooltip = "Highlight the target",
         DisabledTooltip = "I am disabled!",
@@ -187,7 +182,7 @@ Main_Visual:AddToggle("HT_Toggle", {
         end,
     })
 -- ================================================================= Main_Utility =================================================================== --
-Main_Utility:AddToggle("ASA_Toggle", {
+    Main_Utility:AddToggle("ASA_Toggle", {
         Text = "Auto Select Abilities",
         Tooltip = "Automatically select abilities",
         DisabledTooltip = "I am disabled!",
@@ -202,7 +197,27 @@ Main_Utility:AddToggle("ASA_Toggle", {
         end,
     })
 -- =================================================================== CONNECTIONS ==================================================================== --
-    HeartbeatConn = RunService.Heartbeat:Connect(function(delta_time)
+    local Worker = {}
+    Worker.__index = Worker
+    function Worker.new()
+        return setmetatable({ _tasks = {} }, Worker)
+    end
+    function Worker:Start(task)
+        table.insert(self._tasks, task)
+        return task
+    end
+    function Worker:StopAll()
+        for _, task in ipairs(self._tasks) do
+            if typeof(task) == "RBXScriptConnection" then
+                if task.Connected then
+                    task:Disconnect()
+                end
+            end
+            self._tasks[i] = nil
+        end
+    end
+    local worker = Worker.new()
+    worker:Start(RunService.Heartbeat:Connect(function(delta_time)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura
             StartSwing()
@@ -213,11 +228,16 @@ Main_Utility:AddToggle("ASA_Toggle", {
                 LocalPlayer.Character.Humanoid.WalkSpeed = Options.WS_Speed.Value
             end
         end
-    end)
-
+    end))
+    worker:Start(CollectionService:GetInstanceAddedSignal("enemy"):Connect(function(instance)
+        targets[instance] = true
+    end))
+    worker:Start(CollectionService:GetInstanceRemovedSignal("enemy"):Connect(function(instance)
+        targets[instance] = nil
+    end))
 -- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
-        if HeartbeatConn then HeartbeatConn:Disconnect() HeartbeatConn = nil end
+        worker.StopAll()
         KA_Toggle_G = nil
     end)
 end
