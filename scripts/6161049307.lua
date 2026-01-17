@@ -60,7 +60,27 @@ local function StartBlock()
 
     block:FireServer(true)
 end
-local function KillAura(target)
+local TargetHandlers = {}
+TargetHandlers["BookHand"] = function(target)
+    -- Find Korth in the targets table
+    local korth
+    for t in pairs(targets) do
+        if t.Name == "Korth" then
+            korth = t
+            break
+        end
+    end
+
+    if not korth then return end
+
+    local hadEntrance = korth:GetAttribute("hadEntrance")
+    local health = korth:FindFirstChild("Health")
+    if hadEntrance and health and health.Value > 0 then
+        KillAura(target)
+    end
+end
+
+local function Damage(target)
     local onHit = Remotes:FindFirstChild("onHit")
     if not onHit or not target:FindFirstChild("Humanoid") then return end
 
@@ -71,6 +91,18 @@ local function KillAura(target)
         0
     )
 end
+local function KillAura(target)
+    if not target or not target.Parent then return end
+
+    -- Always skip LocalKorth (the player)
+    if target.Name == "LocalKorth" then
+        return
+    end
+
+    local handler = TargetHandlers[target.Name] or Damage
+    handler(target)
+end
+
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
 -- =================================================================== INTERFACE =================================================================== --
@@ -105,7 +137,6 @@ return function(Window, Library)
         task.spawn(function()
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                 for target in pairs(targets) do
-                    if target.Name == "LocalKorth" then continue end
                     KillAura(target)
                 end
 
