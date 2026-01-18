@@ -174,7 +174,6 @@ local Abilities = {
 local AbilitySliders = {}
 local function ChooseUpgrade(num)
     if not UpgradeUIEnv then return end
-    if 
     UpgradeUIEnv.chooseUpgrade(num)
 end
 local function GetPriorities()
