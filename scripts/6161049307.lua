@@ -74,92 +74,69 @@ local function Damage(target)
 end
 
 local TargetHandlers = {}
+local BOOKHAND_INITIAL_DELAY = 2 -- seconds (first time)
+local BOOKHAND_REVIVE_DELAY  = 0 -- seconds (after death)
+
+local BookHandState = {
+    seenAlive = false,
+    wasDead = false,
+    delayUntil = 0,
+}
 TargetHandlers["BookHand"] = function(target)
     local now = os.clock()
 
-    local target_health = target:FindFirstChild("Health")
-    local target_healthbar = target:FindFirstChild("basehitbox"):FindFirstChild("HealthBar")
-    if not target_health and target_healthbar then return end
+    -- Find Korth
+    local korth
+    for t in pairs(targets) do
+        if t.Name == "Korth" or t.Name == "CorruptKorth" then
+            korth = t
+            break
+        end
+    end
+    if not korth then return end
 
-    if target_health.Value > 0 and target_healthbar.Enabled then
+    local hadEntrance = korth:GetAttribute("hadEntrance")
+    local health = korth:FindFirstChild("Health")
+    local alive = korth:FindFirstChild("alive")
+
+    local target_health = target:FindFirstChild("Health")
+    if not target_health then return end
+
+    -- FIRST TIME alive → initial delay (X)
+    if target_health.Value > 0 and not BookHandState.seenAlive and hadEntrance then
+        BookHandState.seenAlive = true
+        BookHandState.delayUntil = now + BOOKHAND_INITIAL_DELAY
+        BookHandState.wasDead = false
+        return
+    end
+
+    -- REVIVE: dead -> alive → revive delay (Y)
+    if target_health.Value > 0 then
+        if BookHandState.wasDead then
+            BookHandState.delayUntil = now + BOOKHAND_REVIVE_DELAY
+            BookHandState.wasDead = false
+            return
+        end
+    else
+        -- Currently dead
+        BookHandState.wasDead = true
+        return
+    end
+
+    -- Still in delay window
+    if now < BookHandState.delayUntil then
+        return
+    end
+
+    if hadEntrance
+        and health and health.Value > 0
+        and alive and alive.Value
+        and target_health.Value > 0 then
+
         Damage(target)
     end
 end
 
--- TargetHandlers["BookHand"] = function(target)
---     local now = os.clock()
-
---     -- Find Korth
---     local korth
---     for t in pairs(targets) do
---         if t.Name == "Korth" or t.Name == "CorruptKorth" then
---             korth = t
---             break
---         end
---     end
---     if not korth then return end
-
---     local hadEntrance = korth:GetAttribute("hadEntrance")
---     local health = korth:FindFirstChild("Health")
---     local alive = korth:FindFirstChild("alive")
-
---     local target_health = target:FindFirstChild("Health")
---     if not target_health then return end
-
---     -- FIRST TIME alive → initial delay (X)
---     if target_health.Value > 0 and not BookHandState.seenAlive and hadEntrance then
---         BookHandState.seenAlive = true
---         BookHandState.delayUntil = now + BOOKHAND_INITIAL_DELAY
---         BookHandState.wasDead = false
---         return
---     end
-
---     -- REVIVE: dead -> alive → revive delay (Y)
---     if target_health.Value > 0 then
---         if BookHandState.wasDead then
---             BookHandState.delayUntil = now + BOOKHAND_REVIVE_DELAY
---             BookHandState.wasDead = false
---             return
---         end
---     else
---         -- Currently dead
---         BookHandState.wasDead = true
---         return
---     end
-
---     -- Still in delay window
---     if now < BookHandState.delayUntil then
---         return
---     end
-
---     if hadEntrance
---         and health and health.Value > 0
---         and alive and alive.Value
---         and target_health.Value > 0 then
-
---         Damage(target)
---     end
--- end
-
--- TargetHandlers["Korth"] = function(target)
---     -- Find Korth in the targets table
---     local book
---     for t in pairs(targets) do
---         if t.Name == "BookHand" then
---             book = t
---             break
---         end
---     end
-
---     if not book then return end
-
---     local health = book:FindFirstChild("Health")
---     local target_health = target:FindFirstChild("Health")
---     if health and health.Value == 0 and target_health and target_health.Value > 0 then
---         Damage(target)
---     end
--- end
--- TargetHandlers["CorruptKorth"] = TargetHandlers["Korth"]
 local function KillAura(target)
     if not target or not target.Parent then return end
 
