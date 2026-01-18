@@ -186,8 +186,18 @@ end
 
 local function AutoSelectAbility()
     if not UpgradeUIEnv then
-        local UpgradeUI = LocalPlayer.PlayerGui and LocalPlayer.PlayerGui.gameUI and LocalPlayer.PlayerGui.gameUI.upgradeFrame and LocalPlayer.PlayerGui.gameUI.upgradeFrame.upgradeUI
+        local pg = LocalPlayer:FindFirstChild("PlayerGui")
+        if not pg then return end
+
+        local gameUI = pg:FindFirstChild("gameUI")
+        if not gameUI then return end
+
+        local upgradeFrame = gameUI:FindFirstChild("upgradeFrame")
+        if not upgradeFrame then return end
+
+        local UpgradeUI = upgradeFrame:FindFirstChild("upgradeUI")
         if not UpgradeUI then return end
+
         UpgradeUIEnv = getsenv(UpgradeUI)
     end
 
