@@ -68,20 +68,26 @@ Hub.Window = Library:CreateWindow({
 local BASE = "https://raw.githubusercontent.com/koo-ph/Ko0Script/" .. GetVersion()
 local SCRIPTS = BASE .. "/scripts/"
 local function loadGame()
-    local ok, src = pcall(function()
+    local ok, srcOrErr = pcall(function()
         return game:HttpGet(SCRIPTS .. game.GameId .. ".lua")
     end)
 
-    if ok and src then
-        local fn = loadstring(src)
+    if ok and srcOrErr then
+        local fn = loadstring(srcOrErr)
         if fn then
-            local success, innerFn = pcall(fn)
-            if success and type(innerFn) == "function" then
+            local success, innerFnOrErr = pcall(fn)
+            if success and type(innerFnOrErr) == "function" then
                 print("Loaded script for:", info.Name, "HUB VERSION:", HUB_VERSION)
-                innerFn(Hub.Window, Hub.Library)
+                innerFnOrErr(Hub.Window, Hub.Library)
                 return
+            elseif not success then
+                warn("Error running loaded script:", innerFnOrErr)
             end
+        else
+            warn("Failed to compile script for:", game.GameId)
         end
+    else
+        warn("HttpGet failed for:", game.GameId, "Error:", srcOrErr)
     end
 
     warn("Cannot find script for:", game.GameId)
