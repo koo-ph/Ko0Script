@@ -74,8 +74,8 @@ local function Damage(target)
 end
 
 local TargetHandlers = {}
-local BOOKHAND_INITIAL_DELAY = 10 -- seconds (first time)
-local BOOKHAND_REVIVE_DELAY  = 5 -- seconds (after death)
+local BOOKHAND_INITIAL_DELAY = 2 -- seconds (first time)
+local BOOKHAND_REVIVE_DELAY  = 0 -- seconds (after death)
 
 local BookHandState = {
     seenAlive = false,
