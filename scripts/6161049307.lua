@@ -81,10 +81,7 @@ TargetHandlers["BookHand"] = function(target)
     local target_healthbar = target:FindFirstChild("basehitbox"):FindFirstChild("HealthBar")
     if not target_health and target_healthbar then return end
 
-    if hadEntrance
-        and target_health.Value > 0 
-        and target_healthbar.Enabled then
-
+    if target_health.Value > 0 and target_healthbar.Enabled then
         Damage(target)
     end
 end
