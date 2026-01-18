@@ -31,6 +31,10 @@ local function GetNear(enemies)
     local nearestDistSq = math.huge
 
     for enemy in pairs(enemies) do
+        local health = enemy:FindFirstChild("Health")
+        if not health or health.Value <= 0 then
+            continue
+        end
         local primary = enemy.PrimaryPart
         if primary then
             local diff = primary.Position - hrp.Position
