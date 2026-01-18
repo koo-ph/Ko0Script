@@ -318,6 +318,7 @@ local function UpdateHealthFrame()
     -- Health
     local health = nearest:FindFirstChild("Health")
     local maxHealth = nearest:GetAttribute("MaxHealth")
+    local maxHealth_child = nearest:FindFirstChild("MaxHealth")
     if health and maxHealth ~= nil then
         local hp = health.Value
         local percent = (maxHealth > 0) and (hp / maxHealth * 100) or 0
@@ -325,6 +326,18 @@ local function UpdateHealthFrame()
 
         -- Update HP Fill
         local fillScale = math.clamp(hp / maxHealth, 0, 1)
+        local targetSize = UDim2.new(fillScale * 0.8435, 0, 0, 42)
+        if currentTween then currentTween:Cancel() end
+        currentTween = TweenService:Create(HPFill, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize})
+        currentTween:Play()
+    else if health and maxHealth_child then
+        local hp = health.Value
+        local maxH = maxHealth_child.Value
+        local percent = (maxH > 0) and (hp / maxH * 100) or 0
+        HPF_Health.Text = string.format("HP %d/%d (%.1f%%)", hp, maxH, percent)
+
+        -- Update HP Fill
+        local fillScale = math.clamp(hp / maxH, 0, 1)
         local targetSize = UDim2.new(fillScale * 0.8435, 0, 0, 42)
         if currentTween then currentTween:Cancel() end
         currentTween = TweenService:Create(HPFill, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize})
