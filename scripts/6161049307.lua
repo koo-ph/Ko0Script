@@ -686,6 +686,7 @@ return function(Window, Library)
     Library:OnUnload(function()
         worker:StopAll()
         highlight:Destroy()
+        KooScreen:Destroy()
         KA_Toggle_G = nil
     end)
 end
