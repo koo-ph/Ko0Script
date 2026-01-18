@@ -385,6 +385,16 @@ return function(Window, Library)
             end
         end,
     })
+    :AddColorPicker("HTO_ColorPicker", {
+		Default = Library.Scheme.AccentColor or Color3.fromRGB(125, 85, 255),
+		Title = "Outline for highlight", -- Optional. Allows you to have a custom color picker title (when you open it)
+		Transparency = 0, -- Optional. Enables transparency changing for this color picker (leave as nil to disable)
+
+		Callback = function(Value)
+			highlight.OutlineColor = Value
+            highlight.OutlineTransparency = Options.HTO_ColorPicker.Transparency
+		end,
+	})
 -- ================================================================= Main_Utility =================================================================== --
     local ASA_Toggle_G = 0
     Main_Utility:AddToggle("ASA_Toggle", {
