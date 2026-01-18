@@ -174,6 +174,7 @@ local Abilities = {
 local AbilitySliders = {}
 local function ChooseUpgrade(num)
     if not UpgradeUIEnv then return end
+    if 
     UpgradeUIEnv.chooseUpgrade(num)
 end
 local function GetPriorities()
@@ -200,7 +201,8 @@ local function AutoSelectAbility()
 
         UpgradeUIEnv = getsenv(UpgradeUI)
     end
-
+    if not UpgradeUIEnv.canSelect then return end
+    
     local banners = UpgradeUIEnv.banners
     if not banners then return end
 
