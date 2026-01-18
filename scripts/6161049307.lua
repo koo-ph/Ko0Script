@@ -201,8 +201,9 @@ local function AutoSelectAbility()
 
         UpgradeUIEnv = getsenv(UpgradeUI)
     end
-    if not UpgradeUIEnv.canSelect then return end
-    
+    local canSelect = UpgradeUIEnv.canSelect
+    if not canSelect then return end
+
     local banners = UpgradeUIEnv.banners
     if not banners then return end
 
