@@ -6,10 +6,6 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Remotes = ReplicatedStorage:WaitForChild("remotes", 1)
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui", 1)
-local GameUI = PlayerGui:WaitForChild("gameUI", 1)
-local UpgradeFrame = GameUI:WaitForChild("upgradeFrame", 1)
-local UpgradeUI = UpgradeFrame:WaitForChild("upgradeUI", 1)
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
@@ -177,12 +173,7 @@ local Abilities = {
 }
 
 local function ChooseUpgrade(num)
-    if not UpgradeUI then return end
-    if not UpgradeUIEnv then 
-        UpgradeUIEnv = getsenv(UpgradeUI)
-        canUpgrade = true
-        return
-    end
+    if not UpgradeUIEnv then return end
     UpgradeUIEnv.chooseUpgrade(num)
 end
 local function GetPriorities()
@@ -194,90 +185,41 @@ local function GetPriorities()
 end
 
 local function AutoSelectAbility()
-    print("[ASA] Tick")
-
-    if not canUpgrade then
-        print("[ASA] canUpgrade = false")
-        return
-    end
-
     if not UpgradeUIEnv then
-        print("[ASA] UpgradeUIEnv is nil")
-        return
-    end
-
-    if not UpgradeUIEnv.canSelect then
-        print("[ASA] UpgradeUIEnv.canSelect = false")
-        return
+        local UpgradeUI = LocalPlayer.PlayerGui and LocalPlayer.PlayerGui.gameUI and LocalPlayer.PlayerGui.gameUI.upgradeFrame and LocalPlayer.PlayerGui.gameUI.upgradeFrame.upgradeUI
+        if not UpgradeUI then return end
+        UpgradeUIEnv = getsenv(UpgradeUI)
     end
 
     local banners = UpgradeUIEnv.banners
-    if not banners then
-        print("[ASA] banners is nil")
-        return
-    end
+    if not banners then return end
 
-    print("[ASA] banners found:", #banners)
-
-    local priorities = GetPriorities()
-    print("[ASA] priorities table:", priorities)
+    local priorities = GetPriorities() -- ability key -> slider value
 
     local bestIndex = nil
     local bestPriority = -math.huge
 
     for i, banner in ipairs(banners) do
-        print("[ASA] Checking banner index:", i)
-
         local title = banner.title
-        if not title then
-            print("  └─ banner.title is nil")
-            continue
-        end
-
-        if not title.Text then
-            print("  └─ title.Text is nil")
-            continue
-        end
-
-        print("  └─ title.Text =", title.Text)
-
-        for key, name in pairs(Abilities) do
-            if string.find(title.Text, name, 1, true) then
-                local priority = priorities[key] or 0
-                print(
-                    string.format(
-                        "    ✓ Matched ability '%s' (key=%s, priority=%d)",
-                        name,
-                        key,
-                        priority
-                    )
-                )
-
-                if priority > bestPriority then
-                    bestPriority = priority
-                    bestIndex = i
-                    print(
-                        string.format(
-                            "    ★ New bestIndex=%d (priority=%d)",
-                            bestIndex,
-                            bestPriority
-                        )
-                    )
+        if title and title.Text then
+            for key, name in pairs(Abilities) do
+                -- Check if the banner text contains the ability name
+                if string.find(title.Text, name, 1, true) then
+                    local priority = priorities[key] or 0
+                    if priority > bestPriority then
+                        bestPriority = priority
+                        bestIndex = i
+                    end
+                    break -- stop checking other abilities for this banner
                 end
-
-                break
             end
         end
     end
 
     if bestIndex then
-        print("[ASA] FINAL bestIndex =", bestIndex, "priority =", bestPriority)
-        ChooseUpgrade(bestIndex)
-    else
-        print("[ASA] No matching ability found")
+        chooseUpgrade(bestIndex)
     end
 end
-
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
