@@ -74,7 +74,8 @@ local function Damage(target)
 end
 
 local TargetHandlers = {}
-local BOOKHAND_DELAY = 10 -- seconds
+local BOOKHAND_INITIAL_DELAY = 10 -- seconds (first time)
+local BOOKHAND_REVIVE_DELAY  = 5 -- seconds (after death)
 
 local BookHandState = {
     seenAlive = false,
@@ -87,18 +88,18 @@ TargetHandlers["BookHand"] = function(target)
     local target_health = target:FindFirstChild("Health")
     if not target_health then return end
 
-    -- FIRST TIME ever seeing BookHand alive → delay
+    -- FIRST TIME alive → initial delay (X)
     if target_health.Value > 0 and not BookHandState.seenAlive then
         BookHandState.seenAlive = true
-        BookHandState.delayUntil = now + BOOKHAND_DELAY
+        BookHandState.delayUntil = now + BOOKHAND_INITIAL_DELAY
         BookHandState.wasDead = false
         return
     end
 
-    -- Detect revive: dead -> alive
+    -- REVIVE: dead -> alive → revive delay (Y)
     if target_health.Value > 0 then
         if BookHandState.wasDead then
-            BookHandState.delayUntil = now + BOOKHAND_DELAY
+            BookHandState.delayUntil = now + BOOKHAND_REVIVE_DELAY
             BookHandState.wasDead = false
             return
         end
@@ -108,7 +109,7 @@ TargetHandlers["BookHand"] = function(target)
         return
     end
 
-    -- Still delaying
+    -- Still in delay window
     if now < BookHandState.delayUntil then
         return
     end
