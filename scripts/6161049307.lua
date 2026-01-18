@@ -166,15 +166,6 @@ highlight.DepthMode = "AlwaysOnTop"
 
 local old_nearest = nil
 local function UpdateHighlight()
-    if not Toggles.HT_Toggle.Value then
-        if highlight.Parent then
-            highlight.Adornee = nil
-            highlight.Parent = nil
-        end
-        old_nearest = nil
-        return
-    end
-
     if not nearest then
         if highlight.Parent then
             highlight.Adornee = nil
@@ -384,7 +375,14 @@ return function(Window, Library)
         Risky = false,
 
         Callback = function(Value)
-            
+            if not Value then
+                if highlight.Parent then
+                    highlight.Adornee = nil
+                    highlight.Parent = nil
+                end
+                old_nearest = nil
+                return
+            end
         end,
     })
 -- ================================================================= Main_Utility =================================================================== --
