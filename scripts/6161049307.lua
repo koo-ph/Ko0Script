@@ -493,6 +493,9 @@ return function(Window, Library)
                 LocalPlayer.Character.Humanoid.WalkSpeed = Options.WS_Speed.Value
             end
         end
+        if Toggles.HT_Toggle.Value then
+            UpdateHighlight()
+        end
     end))
     worker:Start(CollectionService:GetInstanceAddedSignal("enemy"):Connect(function(instance)
         targets[instance] = true
