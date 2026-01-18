@@ -395,6 +395,7 @@ return function(Window, Library)
             highlight.OutlineTransparency = Options.HTO_ColorPicker.Transparency
 		end,
 	})
+    Options.HTO_ColorPicker:SetValueRGB(Options.HTO_ColorPicker.Value)
 -- ================================================================= Main_Utility =================================================================== --
     local ASA_Toggle_G = 0
     Main_Utility:AddToggle("ASA_Toggle", {
