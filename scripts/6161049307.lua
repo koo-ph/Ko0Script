@@ -514,7 +514,7 @@ return function(Window, Library)
 -- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
         worker:StopAll()
-        Toggles.HT_Toggle:Setvalue(false)
+        highlight:Destroy()
         KA_Toggle_G = nil
     end)
 end
