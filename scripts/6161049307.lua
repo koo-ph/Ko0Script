@@ -14,7 +14,7 @@ local Remotes = ReplicatedStorage:WaitForChild("remotes", 1)
 -- ================================================================================================================================================= --
 nearest = nil
 targets = {}
-local function GetNear(tagName, enemies)
+local function GetNear(enemies)
     local character = LocalPlayer.Character
     if not character then
         nearest = nil
@@ -43,7 +43,7 @@ local function GetNear(tagName, enemies)
         end
     end
 
-    nearest = nearestTarget
+    return nearestTarget
 end
 for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
     targets[inst] = true
@@ -147,6 +147,50 @@ local function KillAura(target)
 
     local handler = TargetHandlers[target.Name] or Damage
     handler(target)
+end
+
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
+-- ================================================================== HIGHLIGHT ==================================================================== --
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
+-- Create a Highlight
+local highlight = Instance.new("Highlight")
+
+-- Customize properties
+highlight.FillColor = Color3.fromRGB(0, 0, 0)   -- Yellow fill
+highlight.OutlineColor = Color3.fromRGB(123, 43, 90)    -- Black outline
+highlight.FillTransparency = .95                    -- Semi-transparent fill
+highlight.OutlineTransparency = 0                   -- Solid outline
+highlight.DepthMode = "AlwaysOnTop"
+
+local old_nearest = nil
+local function UpdateHighlight()
+    if not Toggles.HT_Toggle.Value then
+        if highlight.Parent then
+            highlight.Adornee = nil
+            highlight.Parent = nil
+        end
+        old_nearest = nil
+        return
+    end
+
+    if not nearest then
+        if highlight.Parent then
+            highlight.Adornee = nil
+            highlight.Parent = nil
+        end
+        old_nearest = nil
+        return
+    end
+
+    -- Target changed
+    if nearest ~= old_nearest then
+        highlight.Adornee = nearest
+        highlight.Parent = nearest  -- or Workspace
+        highlight.Enabled = true
+        old_nearest = nearest
+    end
 end
 
 -- ================================================================================================================================================= --
@@ -438,6 +482,7 @@ return function(Window, Library)
     end
     local worker = Worker.new()
     worker:Start(RunService.Heartbeat:Connect(function(delta_time)
+        nearest = GetNear(targets)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura
             StartSwing()
