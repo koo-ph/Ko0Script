@@ -6,6 +6,10 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 local Remotes = ReplicatedStorage:WaitForChild("remotes")
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local GameUI = PlayerGui:WaitForChild("gameUI")
+local UpgradeFrame = GameUI:WaitForChild("upgradeFrame")
+local UpgradeUI = UpgradeFrame:WaitForChild("upgradeUI")
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
@@ -151,6 +155,80 @@ end
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
+-- ================================================================= AUTO ABILITY ================================================================== --
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
+local UpgradeUIEnv
+local canUpgrade = false
+local Abilities = {
+    Crit = "Critical Boost",
+    Flame = "Flame Element",
+    Frost = "Frost Element",
+    Poison = "Poison Element",
+    Recovery = "Recovery",
+    Health = "Health Boost",
+    Stamina = "Stamina",
+    Agility = "Agility",
+    Element = "Element Circle",
+    Life = "Life Steal",
+    RSpirit = "Rage Spirits",
+    CSpirit = "Spirit Capacity",
+    Thorns = "Thorns",
+}
+
+local function ChooseUpgrade(num)
+    if not UpgradeUI then return end
+    if not UpgradeUIEnv then 
+        UpgradeUIEnv = getsenv(UpgradeUI)
+        canUpgrade = true
+        return
+    end
+    UpgradeUIEnv.chooseUpgrade(num)
+end
+local function GetPriorities()
+    local priorities = {}
+    for ability, name in pairs(Abilities) do
+        priorities[ability] = Options[ability].Value
+    end
+    return priorities
+end
+
+local function AutoSelectAbility()
+    if not canUpgrade then return end
+    if not UpgradeUIEnv or not UpgradeUIEnv.canSelect then return end
+
+    local banners = UpgradeUIEnv.banners
+    if not banners then return end
+
+    local priorities = GetPriorities() -- ability key -> slider value
+
+    local bestIndex = nil
+    local bestPriority = -math.huge
+
+    for i, banner in ipairs(banners) do
+        local title = banner.title
+        if title and title.Text then
+            for key, name in pairs(Abilities) do
+                -- Check if the banner text contains the ability name
+                if string.find(title.Text, name, 1, true) then
+                    local priority = priorities[key] or 0
+                    if priority > bestPriority then
+                        bestPriority = priority
+                        bestIndex = i
+                    end
+                    break -- stop checking other abilities for this banner
+                end
+            end
+        end
+    end
+
+    if bestIndex then
+        chooseUpgrade(bestIndex)
+    end
+end
+
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
 -- =================================================================== INTERFACE =================================================================== --
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
@@ -164,6 +242,7 @@ return function(Window, Library)
     local Main_Movement = Main:AddLeftGroupbox("Movement", "footprints")
     local Main_Visual = Main:AddRightGroupbox("Visual", "eye")
     local Main_Utility = Main:AddRightGroupbox("Utility", "target")
+    local Main_Priority = Main:AddRightGroupbox("Priority", "circle-alert")
 -- ================================================================== Main_Combat =================================================================== --
     local KA_Toggle_G = 0
     Main_Combat:AddToggle("KA_Toggle", {
@@ -259,18 +338,27 @@ return function(Window, Library)
         end,
     })
 -- ================================================================= Main_Utility =================================================================== --
+    local ASA_Toggle_G = 0
     Main_Utility:AddToggle("ASA_Toggle", {
         Text = "Auto Select Abilities",
         Tooltip = "Automatically select abilities",
         DisabledTooltip = "I am disabled!",
-
         Default = false,
         Disabled = false,
         Visible = true,
         Risky = false,
 
         Callback = function(Value)
-            
+            ASA_Toggle_G += 1
+            local myG = ASA_Toggle_G
+            if not Value then return end
+
+            task.spawn(function()
+                while Toggles.ASA_Toggle.Value and ASA_Toggle_G == myG do
+                    AutoSelectAbility()
+                    task.wait(0.3)
+                end
+            end)
         end,
     })
     Main_Utility:AddButton("Open All Chest", function()
@@ -292,6 +380,28 @@ return function(Window, Library)
             end
         end
     end)
+-- ================================================================ Main_Priority =================================================================== --
+    for ability, name in pairs(Abilities) do
+        Main_Priority:AddSlider(ability, {
+            Text = name,
+            Default = 1,
+            Min = 1,
+            Max = 20,
+            Rounding = 0,
+            Suffix = "",
+            Compact = true,
+
+            Callback = function(Value)
+
+            end,
+
+            Tooltip = name .. " Priority", -- Information shown when you hover over the slider
+            DisabledTooltip = "I am disabled!", -- Information shown when you hover over the slider while it's disabled
+
+            Disabled = false, -- Will disable the slider (true / false)
+            Visible = true, -- Will make the slider invisible (true / false)
+        })
+    end
 -- =================================================================== CONNECTIONS ==================================================================== --
     local Worker = {}
     Worker.__index = Worker
