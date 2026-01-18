@@ -3,13 +3,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
-local Remotes = ReplicatedStorage:WaitForChild("remotes")
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local GameUI = PlayerGui:WaitForChild("gameUI")
-local UpgradeFrame = GameUI:WaitForChild("upgradeFrame")
-local UpgradeUI = UpgradeFrame:WaitForChild("upgradeUI")
+local LocalPlayer = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("remotes", 5)
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui", 5)
+local GameUI = PlayerGui:WaitForChild("gameUI", 5)
+local UpgradeFrame = GameUI:WaitForChild("upgradeFrame", 5)
+local UpgradeUI = UpgradeFrame:WaitForChild("upgradeUI", 5)
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
