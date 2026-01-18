@@ -223,6 +223,7 @@ local function AutoSelectAbility()
     end
 
     if bestIndex then
+        print(bestIndex)
         chooseUpgrade(bestIndex)
     end
 end
