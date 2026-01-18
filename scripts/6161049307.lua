@@ -194,39 +194,90 @@ local function GetPriorities()
 end
 
 local function AutoSelectAbility()
-    if not canUpgrade then return end
-    if not UpgradeUIEnv or not UpgradeUIEnv.canSelect then return end
+    print("[ASA] Tick")
+
+    if not canUpgrade then
+        print("[ASA] canUpgrade = false")
+        return
+    end
+
+    if not UpgradeUIEnv then
+        print("[ASA] UpgradeUIEnv is nil")
+        return
+    end
+
+    if not UpgradeUIEnv.canSelect then
+        print("[ASA] UpgradeUIEnv.canSelect = false")
+        return
+    end
 
     local banners = UpgradeUIEnv.banners
-    if not banners then return end
+    if not banners then
+        print("[ASA] banners is nil")
+        return
+    end
 
-    local priorities = GetPriorities() -- ability key -> slider value
+    print("[ASA] banners found:", #banners)
+
+    local priorities = GetPriorities()
+    print("[ASA] priorities table:", priorities)
 
     local bestIndex = nil
     local bestPriority = -math.huge
 
     for i, banner in ipairs(banners) do
+        print("[ASA] Checking banner index:", i)
+
         local title = banner.title
-        if title and title.Text then
-            for key, name in pairs(Abilities) do
-                -- Check if the banner text contains the ability name
-                if string.find(title.Text, name, 1, true) then
-                    local priority = priorities[key] or 0
-                    if priority > bestPriority then
-                        bestPriority = priority
-                        bestIndex = i
-                    end
-                    break -- stop checking other abilities for this banner
+        if not title then
+            print("  └─ banner.title is nil")
+            continue
+        end
+
+        if not title.Text then
+            print("  └─ title.Text is nil")
+            continue
+        end
+
+        print("  └─ title.Text =", title.Text)
+
+        for key, name in pairs(Abilities) do
+            if string.find(title.Text, name, 1, true) then
+                local priority = priorities[key] or 0
+                print(
+                    string.format(
+                        "    ✓ Matched ability '%s' (key=%s, priority=%d)",
+                        name,
+                        key,
+                        priority
+                    )
+                )
+
+                if priority > bestPriority then
+                    bestPriority = priority
+                    bestIndex = i
+                    print(
+                        string.format(
+                            "    ★ New bestIndex=%d (priority=%d)",
+                            bestIndex,
+                            bestPriority
+                        )
+                    )
                 end
+
+                break
             end
         end
     end
 
     if bestIndex then
-        print(bestIndex)
-        chooseUpgrade(bestIndex)
+        print("[ASA] FINAL bestIndex =", bestIndex, "priority =", bestPriority)
+        ChooseUpgrade(bestIndex)
+    else
+        print("[ASA] No matching ability found")
     end
 end
+
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
@@ -456,10 +507,3 @@ return function(Window, Library)
         KA_Toggle_G = nil
     end)
 end
-
---- THIS IS A FUNCTIONS
--- local args = {
--- 	1
--- }
--- game:GetService("ReplicatedStorage"):WaitForChild("remotes"):WaitForChild("plrUpgrade"):FireServer(unpack(args))
-
