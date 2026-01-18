@@ -85,11 +85,25 @@ local BookHandState = {
 TargetHandlers["BookHand"] = function(target)
     local now = os.clock()
 
+    -- Find Korth
+    local korth
+    for t in pairs(targets) do
+        if t.Name == "Korth" or t.Name == "CorruptKorth" then
+            korth = t
+            break
+        end
+    end
+    if not korth then return end
+
+    local hadEntrance = korth:GetAttribute("hadEntrance")
+    local health = korth:FindFirstChild("Health")
+    local alive = korth:FindFirstChild("alive")
+
     local target_health = target:FindFirstChild("Health")
     if not target_health then return end
 
     -- FIRST TIME alive → initial delay (X)
-    if target_health.Value > 0 and not BookHandState.seenAlive then
+    if target_health.Value > 0 and not BookHandState.seenAlive and hadEntrance then
         BookHandState.seenAlive = true
         BookHandState.delayUntil = now + BOOKHAND_INITIAL_DELAY
         BookHandState.wasDead = false
@@ -113,20 +127,6 @@ TargetHandlers["BookHand"] = function(target)
     if now < BookHandState.delayUntil then
         return
     end
-
-    -- Find Korth
-    local korth
-    for t in pairs(targets) do
-        if t.Name == "Korth" or t.Name == "CorruptKorth" then
-            korth = t
-            break
-        end
-    end
-    if not korth then return end
-
-    local hadEntrance = korth:GetAttribute("hadEntrance")
-    local health = korth:FindFirstChild("Health")
-    local alive = korth:FindFirstChild("alive")
 
     if hadEntrance
         and health and health.Value > 0
