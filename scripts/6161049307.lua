@@ -217,7 +217,7 @@ local function AutoSelectAbility()
     end
 
     if bestIndex then
-        chooseUpgrade(bestIndex)
+        ChooseUpgrade(bestIndex)
     end
 end
 
