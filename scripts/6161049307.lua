@@ -330,7 +330,7 @@ local function UpdateHealthFrame()
         if currentTween then currentTween:Cancel() end
         currentTween = TweenService:Create(HPFill, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize})
         currentTween:Play()
-    else if health and maxHealth_child then
+    elseif health and maxHealth_child then
         local hp = health.Value
         local maxH = maxHealth_child.Value
         local percent = (maxH > 0) and (hp / maxH * 100) or 0
