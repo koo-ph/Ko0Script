@@ -273,6 +273,25 @@ return function(Window, Library)
             
         end,
     })
+    Main_Utility:AddButton("Open All Chest", function()
+        local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+        local gameUI = playerGui and playerGui:FindFirstChild("gameUI")
+        local armory = gameUI and gameUI:FindFirstChild("armory")
+        local inventory = armory and armory:FindFirstChild("inventory")
+        local clip = inventory and inventory:FindFirstChild("clip")
+        local loots = clip and clip:FindFirstChild("Loot")
+
+        if not loots then return end
+        for i=1, 100 do
+            for _, loot in ipairs(loots:GetChildren()) do
+                local args = {
+                    loot.Name,
+                    1
+                }
+                Remotes:WaitForChild("openLoot"):InvokeServer(unpack(args))
+            end
+        end
+    end)
 -- =================================================================== CONNECTIONS ==================================================================== --
     local Worker = {}
     Worker.__index = Worker
