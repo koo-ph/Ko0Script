@@ -74,7 +74,7 @@ local function Damage(target)
 end
 
 local TargetHandlers = {}
-local BOOKHAND_DELAY = 2 -- seconds
+local BOOKHAND_DELAY = 10 -- seconds
 
 local BookHandState = {
     seenAlive = false,
