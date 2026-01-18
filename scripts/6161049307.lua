@@ -51,6 +51,9 @@ local function GetNear(enemies)
     return nearestTarget
 end
 for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
+    if inst.Name == "LocalKorth" or inst.Name == "GhostClyde" then
+        continue
+    end
     targets[inst] = true
 end
 local function StartSwing()
@@ -143,12 +146,7 @@ TargetHandlers["BookHand"] = function(target)
 end
 
 local function KillAura(target)
-    if not target or not target.Parent then return end
-
-    -- Always skip LocalKorth (the player)
-    if target.Name == "LocalKorth" then
-        return
-    end
+    if not target or not target.Parent then return end    
 
     local handler = TargetHandlers[target.Name] or Damage
     handler(target)
@@ -660,6 +658,12 @@ return function(Window, Library)
         end
     end))
     worker:Start(CollectionService:GetInstanceAddedSignal("enemy"):Connect(function(instance)
+        for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
+            if inst.Name == "LocalKorth" or inst.Name == "GhostClyde" then
+                continue
+            end
+            targets[inst] = true
+        end
         targets[instance] = true
     end))
     worker:Start(CollectionService:GetInstanceRemovedSignal("enemy"):Connect(function(instance)
