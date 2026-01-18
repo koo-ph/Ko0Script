@@ -1,6 +1,7 @@
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
+local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -190,6 +191,153 @@ end
 
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
+-- ================================================================ HEALTH FRAME =================================================================== --
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
+-- Instances:
+
+local KooScreen = Instance.new("ScreenGui")
+local HPFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local HPBar = Instance.new("Frame")
+local UICorner_2 = Instance.new("UICorner")
+local HPFill = Instance.new("Frame")
+local UICorner_3 = Instance.new("UICorner")
+local HPF_Target = Instance.new("TextLabel")
+local HPF_Distance = Instance.new("TextLabel")
+local HPF_Health = Instance.new("TextLabel")
+local UIGradient = Instance.new("UIGradient")
+
+--Properties:
+
+KooScreen.Name = "KooScreen"
+KooScreen.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+KooScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+KooScreen.Enabled = false
+
+HPFrame.Name = "HPFrame"
+HPFrame.Parent = KooScreen
+HPFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+HPFrame.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
+HPFrame.BorderSizePixel = 0
+HPFrame.Position = UDim2.new(0.5, 0, 0.150000006, 0)
+HPFrame.Size = UDim2.new(0, 377, 0, 136)
+
+UICorner.CornerRadius = UDim.new(0, 18)
+UICorner.Parent = HPFrame
+
+HPBar.Name = "HPBar"
+HPBar.Parent = HPFrame
+HPBar.BackgroundColor3 = Color3.fromRGB(26, 0, 0)
+HPBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HPBar.BorderSizePixel = 0
+HPBar.Position = UDim2.new(0.0778368264, 0, 0.400334865, 0)
+HPBar.Size = UDim2.new(0, 318, 0, 42)
+
+UICorner_2.CornerRadius = UDim.new(0, 15)
+UICorner_2.Parent = HPBar
+
+HPFill.Name = "HPFill"
+HPFill.Parent = HPFrame
+HPFill.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+HPFill.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HPFill.BorderSizePixel = 0
+HPFill.Position = UDim2.new(0.0778368264, 0, 0.400334865, 0)
+HPFill.Size = UDim2.new(0, 153, 0, 42)
+
+UICorner_3.CornerRadius = UDim.new(0, 15)
+UICorner_3.Parent = HPFill
+
+HPF_Target.Name = "HPF_Target"
+HPF_Target.Parent = HPFrame
+HPF_Target.BackgroundTransparency = 1.000
+HPF_Target.Position = UDim2.new(0.157953322, 0, 0.335468858, 0)
+HPF_Target.Size = UDim2.new(0.684350133, 0, -0.264705896, 0)
+HPF_Target.FontFace = Font.new(
+	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
+	Enum.FontWeight.Bold                          -- weight
+)
+HPF_Target.Text = "Corrupted Korth"
+HPF_Target.TextColor3 = Color3.fromRGB(255, 255, 255)
+HPF_Target.TextSize = 24.000
+HPF_Target.TextWrapped = true
+
+HPF_Distance.Name = "HPF_Distance"
+HPF_Distance.Parent = HPFrame
+HPF_Distance.BackgroundTransparency = 1.000
+HPF_Distance.Position = UDim2.new(0.0778368264, 0, 0.864880621, 0)
+HPF_Distance.Size = UDim2.new(0.843501329, 0, -0.132352948, 0)
+HPF_Distance.FontFace = Font.new(
+	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
+	Enum.FontWeight.Bold                          -- weight
+)
+HPF_Distance.Text = "Distance: 100m"
+HPF_Distance.TextColor3 = Color3.fromRGB(255, 255, 255)
+HPF_Distance.TextScaled = true
+HPF_Distance.TextSize = 14.000
+HPF_Distance.TextWrapped = true
+
+HPF_Health.Name = "HPF_Health"
+HPF_Health.Parent = HPFrame
+HPF_Health.BackgroundTransparency = 1.000
+HPF_Health.Position = UDim2.new(0.109667063, 0, 0.62223357, 0)
+HPF_Health.Size = UDim2.new(0.787798405, 0, -0.132352948, 0)
+HPF_Health.FontFace = Font.new(
+	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
+	Enum.FontWeight.Bold                          -- weight
+)
+HPF_Health.Text = "HP 1000/1000 (100%)"
+HPF_Health.TextColor3 = Color3.fromRGB(255, 255, 255)
+HPF_Health.TextScaled = true
+HPF_Health.TextSize = 14.000
+HPF_Health.TextWrapped = true
+HPF_Health.TextXAlignment = Enum.TextXAlignment.Left
+
+UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 10, 70)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 0, 35))}
+UIGradient.Rotation = 135
+UIGradient.Parent = HPFrame
+
+local currentTween = nil
+local function UpdateHealthFrame()
+    if not nearest then
+        KooScreen.Enabled = false
+        return
+    end
+
+    KooScreen.Enabled = true
+    -- Target Name
+    HPF_Target.Text = nearest.Name
+
+    -- Distance
+    local character = LocalPlayer.Character
+    if nearest.PrimaryPart and character and character:FindFirstChild("HumanoidRootPart") then
+        local dist = (nearest.PrimaryPart.Position - character.HumanoidRootPart.Position).Magnitude
+        HPF_Distance.Text = string.format("Distance: %.1f m", dist)
+    else
+        HPF_Distance.Text = "Distance: N/A"
+    end
+
+    -- Health
+    local health = nearest:FindFirstChild("Health")
+    local maxHealth = nearest:GetAttribute("MaxHealth")
+    if health and maxHealth ~= nil then
+        local hp = health.Value
+        local percent = (maxHealth > 0) and (hp / maxHealth * 100) or 0
+        HPF_Health.Text = string.format("HP %d/%d (%.1f%%)", hp, maxHealth, percent)
+
+        -- Update HP Fill
+        local fillScale = math.clamp(hp / maxHealth, 0, 1)
+        local targetSize = UDim2.new(fillScale * 0.8435, 0, 0, 42)
+        if currentTween then currentTween:Cancel() end
+        currentTween = TweenService:Create(HPFill, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize})
+        currentTween:Play()
+    else
+        HPF_Health.Text = "HP N/A"
+        HPFill.Size = UDim2.new(0, 0, 0, 42)
+    end
+end
+-- ================================================================================================================================================= --
+-- ================================================================================================================================================= --
 -- ================================================================= AUTO ABILITY ================================================================== --
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
@@ -303,7 +451,7 @@ return function(Window, Library)
     Callback = function(Value)
         KA_Toggle_G += 1
         local myG = KA_Toggle_G
-        if not Value then return end
+        if not Value then KooScreen.Enabled = false return end
         task.spawn(function()
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                 for target in pairs(targets) do
@@ -498,6 +646,7 @@ return function(Window, Library)
         nearest = GetNear(targets)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura
+            UpdateHealthFrame()
             StartSwing()
             StartBlock()
         end
