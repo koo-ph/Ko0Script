@@ -171,15 +171,15 @@ local Abilities = {
     CSpirit = "Spirit Capacity",
     Thorns = "Thorns",
 }
-
+local AbilitySliders = {}
 local function ChooseUpgrade(num)
     if not UpgradeUIEnv then return end
     UpgradeUIEnv.chooseUpgrade(num)
 end
 local function GetPriorities()
     local priorities = {}
-    for ability, name in pairs(Abilities) do
-        priorities[ability] = Options[ability].Value
+    for ability, slider in pairs(AbilitySliders) do
+        priorities[ability] = slider.Value
     end
     return priorities
 end
@@ -386,7 +386,7 @@ return function(Window, Library)
     end)
 -- ================================================================ Main_Priority =================================================================== --
     for ability, name in pairs(Abilities) do
-        Main_Priority:AddSlider(ability, {
+        AbilitySliders[ability] = Main_Priority:AddSlider(ability, {
             Text = name,
             Default = 1,
             Min = 1,
