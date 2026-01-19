@@ -51,9 +51,8 @@ local function GetNear(enemies)
     return nearestTarget
 end
 for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
-    if inst.Name == "LocalKorth" or inst.Parent ~= Workspace then
-        continue
-    end
+    if inst.Name == "LocalKorth" then continue end
+    if not inst:IsDescendantOf(Workspace) then continue end
     targets[inst] = true
 end
 local function StartSwing()
@@ -671,7 +670,10 @@ return function(Window, Library)
         end
     end))
     worker:Start(CollectionService:GetInstanceAddedSignal("enemy"):Connect(function(instance)
-        if instance.Name == "LocalKorth" or instance.Parent ~= Workspace then
+        if instance.Name == "LocalKorth" then
+            return
+        end
+        if not instance:IsDescendantOf(workspace) then
             return
         end
         targets[instance] = true
