@@ -671,11 +671,8 @@ return function(Window, Library)
         end
     end))
     worker:Start(CollectionService:GetInstanceAddedSignal("enemy"):Connect(function(instance)
-        for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
-            if inst.Name == "LocalKorth" or inst.Name == "GhostClyde" then
-                continue
-            end
-            targets[inst] = true
+        if instance.Name == "LocalKorth" or instance.Name == "GhostClyde" then
+            return
         end
         targets[instance] = true
     end))
