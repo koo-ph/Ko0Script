@@ -668,7 +668,7 @@ return function(Window, Library)
                 end
 
                 unveilRing:InvokeServer("Normal")
-                task.wait(0.25)
+                task.wait(0.01)
             end
 
             -- Open super rings
@@ -679,7 +679,7 @@ return function(Window, Library)
                 end
 
                 unveilRing:InvokeServer("Super")
-                task.wait(0.25)
+                task.wait(0.01)
             end
 
             -- 🔓 UNLOCK ONLY AFTER EVERYTHING FINISHES
