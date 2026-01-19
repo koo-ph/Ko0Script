@@ -1,46 +1,39 @@
 -- ======================================================
--- 🔮 Local Ko0 Hub Loader (with logging)
+-- 🔮 Ko0 Hub Loader (Local Version)
 -- ======================================================
 
-local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
-local LocalPlayer = Players.LocalPlayer
+-- Local script folder
+local SCRIPTS_DIR = "Ko0Script/scripts/"
 
-local info = MarketplaceService:GetProductInfo(game.PlaceId)
-print("[Ko0 Hub] Game:", info.Name, "PlaceId:", game.PlaceId)
+-- Use timestamp as cache buster (optional for local, mostly ignored)
+local CACHE_BUSTER = tostring(os.time())
 
--- ========= Library =========
-local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
-local Library, ThemeManager, SaveManager
+-- Versioning (optional, can keep "local" for now)
+local HUB_VERSION = "local"
 
-local function SafeLoad(url)
-    local ok, res = pcall(function()
-        return loadstring(game:HttpGet(url))()
-    end)
-    if not ok then
-        warn("[Ko0 Hub] Failed to load:", url, "Error:", res)
-        return nil
-    end
-    return res
-end
-
-Library = SafeLoad(repo .. "Library.lua")
-ThemeManager = SafeLoad(repo .. "addons/ThemeManager.lua")
-SaveManager = SafeLoad(repo .. "addons/SaveManager.lua")
-
-if not Library then
-    error("[Ko0 Hub] Cannot continue without Library!")
-end
-
--- ========= Hub globals =========
 getgenv().Ko0Hub = getgenv().Ko0Hub or {}
 local Hub = getgenv().Ko0Hub
 
--- Prevent duplicate window creation
+-- Unload previous instance
+if Hub.Unload then
+    pcall(Hub.Unload)
+end
+
+-- Prevent duplicate window
 if Hub.Window and Hub.Window.Open then
-    warn("[Ko0 Hub] Window already loaded!")
+    warn("Ko0 Hub already loaded!")
     return
 end
+
+-- ========= Services =========
+local MarketplaceService = game:GetService("MarketplaceService")
+
+-- ========= Library (Obsidian, unchanged) =========
+local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
+local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
+local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
+Library.ForceCheckbox = false
 
 Hub.Library = Library
 Hub.Unload = function()
@@ -51,6 +44,7 @@ Hub.Unload = function()
 end
 
 -- ========= Window =========
+local info = MarketplaceService:GetProductInfo(game.PlaceId)
 Hub.Window = Library:CreateWindow({
     Title = "🔮 Ko0 Hub 🔮",
     Footer = info.Name,
@@ -60,51 +54,41 @@ Hub.Window = Library:CreateWindow({
     ShowCustomCursor = false,
 })
 
--- ========= Local script loader =========
-local SCRIPT_DIR = "C:\\Users\\Vivo\\Desktop\\Ko0Script"  -- relative folder
-local gameScriptPath = SCRIPT_DIR .. game.GameId .. ".lua"
-local fallbackPath = SCRIPT_DIR .. "test.lua"
-
-local function Log(msg, ...)
-    print("[Ko0 Hub]", string.format(msg, ...))
-end
-
+-- ========= GAME LOADER (LOCAL) =========
 local function loadGame()
-    Log("Attempting to load local script for PlaceId %d: %s", game.PlaceId, gameScriptPath)
+    local localPath = SCRIPTS_DIR .. game.GameId .. ".lua"
+    local success, chunk = pcall(function()
+        return loadfile(localPath)
+    end)
 
-    local chunk, err = loadfile(gameScriptPath)
-    if chunk then
-        local ok, fn = pcall(chunk)
-        if ok and type(fn) == "function" then
-            Log("Successfully loaded local script: %s", gameScriptPath)
-            fn(Hub.Window, Hub.Library)
+    if success and chunk then
+        local ok, innerFn = pcall(chunk)
+        if ok and type(innerFn) == "function" then
+            print("Loaded local script for:", info.Name, "HUB VERSION:", HUB_VERSION)
+            innerFn(Hub.Window, Hub.Library)
             return
         else
-            warn("[Ko0 Hub] Error running script:", fn)
+            warn("Error running local script for:", game.GameId, innerFn)
         end
     else
-        warn("[Ko0 Hub] Failed to compile script:", err)
+        warn("Cannot find local script for:", game.GameId, "Path:", localPath)
     end
 
-    -- Fallback
-    Log("Loading fallback script: %s", fallbackPath)
-    local fallbackChunk, fallbackErr = loadfile(fallbackPath)
-    if fallbackChunk then
-        local ok, fn = pcall(fallbackChunk)
-        if ok and type(fn) == "function" then
-            Log("Successfully loaded fallback script")
-            fn(Hub.Window, Hub.Library)
-        else
-            warn("[Ko0 Hub] Failed to run fallback script:", fn)
+    -- Fallback: load test.lua locally
+    local testPath = SCRIPTS_DIR .. "test.lua"
+    local testChunk = loadfile(testPath)
+    if testChunk then
+        local ok, innerFn = pcall(testChunk)
+        if ok and type(innerFn) == "function" then
+            print("Loaded local test.lua as fallback")
+            innerFn(Hub.Window, Hub.Library)
         end
-    else
-        warn("[Ko0 Hub] Fallback script not found or failed to compile:", fallbackErr)
     end
 end
 
 loadGame()
 
--- ========= Settings tab =========
+-- ========= Settings Tab =========
 local SettingsTab = Hub.Window:AddTab("Settings", "settings")
 local MenuGroup = SettingsTab:AddLeftGroupbox("Menu")
 
@@ -149,6 +133,10 @@ MenuGroup:AddLabel("Menu bind")
 MenuGroup:AddButton("Unload", function()
     Hub.Unload()
 end)
+MenuGroup:AddDivider()
+MenuGroup:AddLabel("Hub Version:\t" .. HUB_VERSION)
+
+Library.ToggleKeybind = Hub.Library.Options.MenuKeybind
 
 -- ========= Managers =========
 ThemeManager:SetLibrary(Hub.Library)
@@ -163,3 +151,14 @@ SaveManager:SetFolder("Ko0-Hub/" .. game.GameId)
 SaveManager:BuildConfigSection(SettingsTab)
 ThemeManager:ApplyToTab(SettingsTab)
 SaveManager:LoadAutoloadConfig()
+
+-- ========= Queue on teleport =========
+getgenv().Ko0TP = getgenv().Ko0TP or false
+if not getgenv().Ko0TP then
+    getgenv().Ko0TP = true
+    queue_on_teleport([[
+        getgenv().Ko0TP = false
+        -- Load local version on teleport
+        loadfile("Ko0Script/local_loader.lua")()
+    ]])
+end

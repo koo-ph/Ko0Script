@@ -213,114 +213,208 @@ end
 -- Instances:
 
 local KooScreen = Instance.new("ScreenGui")
-local HPFrame = Instance.new("Frame")
+local PerfFrame = Instance.new("Frame")
+local PingFrame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
-local HPBar = Instance.new("Frame")
-local UICorner_2 = Instance.new("UICorner")
-local HPFill = Instance.new("Frame")
-local UICorner_3 = Instance.new("UICorner")
-local HPF_Target = Instance.new("TextLabel")
-local HPF_Distance = Instance.new("TextLabel")
-local HPF_Health = Instance.new("TextLabel")
 local UIGradient = Instance.new("UIGradient")
-
---Properties:
+local PingText = Instance.new("TextLabel")
+local FPSFrame = Instance.new("Frame")
+local UICorner_2 = Instance.new("UICorner")
+local UIGradient_2 = Instance.new("UIGradient")
+local FPSText = Instance.new("TextLabel")
+local UIListLayout = Instance.new("UIListLayout")
+local HPFrame = Instance.new("Frame")
+local UICorner_3 = Instance.new("UICorner")
+local UIGradient_3 = Instance.new("UIGradient")
+local HPBar = Instance.new("Frame")
+local UICorner_4 = Instance.new("UICorner")
+local HPFill = Instance.new("Frame")
+local UICorner_5 = Instance.new("UICorner")
+local UIGradient_4 = Instance.new("UIGradient")
+local HPF_Target = Instance.new("TextLabel")
+local HPF_Health = Instance.new("TextLabel")
+local HPF_Distance = Instance.new("TextLabel")
 
 KooScreen.Name = "KooScreen"
-KooScreen.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+KooScreen.Parent = LocalPlayer:WaitForChild("PlayerGui")
 KooScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-KooScreen.Enabled = false
+KooScreen.ResetOnSpawn = false
+KooScreen.IgnoreGuiInset = true
+
+PerfFrame.Name = "PerfFrame"
+PerfFrame.Parent = KooScreen
+PerfFrame.AnchorPoint = Vector2.new(1, 0)
+PerfFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+PerfFrame.BackgroundTransparency = 1.000
+PerfFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+PerfFrame.BorderSizePixel = 0
+PerfFrame.Position = UDim2.new(0.800000012, 0, 0.0599999987, 0)
+PerfFrame.Size = UDim2.new(0.170000002, 0, 0.0299999993, 0)
+
+PingFrame.Name = "PingFrame"
+PingFrame.Parent = PerfFrame
+PingFrame.AnchorPoint = Vector2.new(1, 0)
+PingFrame.BackgroundColor3 = Color3.fromRGB(22, 20, 35)
+PingFrame.BackgroundTransparency = 0.050
+PingFrame.BorderSizePixel = 0
+PingFrame.LayoutOrder = 2
+PingFrame.Position = UDim2.new(0.904682577, 0, 0.0118811959, 0)
+PingFrame.Size = UDim2.new(0.449999988, 0, 1, 0)
+
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = PingFrame
+
+UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(160, 90, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(35, 25, 60))}
+UIGradient.Rotation = 90
+UIGradient.Parent = PingFrame
+
+PingText.Name = "PingText"
+PingText.Parent = PingFrame
+PingText.AnchorPoint = Vector2.new(0.5, 0.5)
+PingText.BackgroundTransparency = 1.000
+PingText.Position = UDim2.new(0.5, 0, 0.5, 0)
+PingText.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+PingText.FontFace = Font.new(
+	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
+	Enum.FontWeight.Bold                          -- weight
+)
+PingText.Text = "Ping: 232345ms"
+PingText.TextColor3 = Color3.fromRGB(235, 235, 255)
+PingText.TextScaled = true
+PingText.TextSize = 14.000
+PingText.TextWrapped = true
+
+FPSFrame.Name = "FPSFrame"
+FPSFrame.Parent = PerfFrame
+FPSFrame.AnchorPoint = Vector2.new(1, 0)
+FPSFrame.BackgroundColor3 = Color3.fromRGB(22, 20, 35)
+FPSFrame.BackgroundTransparency = 0.050
+FPSFrame.BorderSizePixel = 0
+FPSFrame.LayoutOrder = 1
+FPSFrame.Position = UDim2.new(0.775458097, 0, 0.0126732644, 0)
+FPSFrame.Size = UDim2.new(0.449999988, 0, 1, 0)
+
+UICorner_2.CornerRadius = UDim.new(0, 10)
+UICorner_2.Parent = FPSFrame
+
+UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(110, 80, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(30, 25, 55))}
+UIGradient_2.Rotation = 90
+UIGradient_2.Parent = FPSFrame
+
+FPSText.Name = "FPSText"
+FPSText.Parent = FPSFrame
+FPSText.AnchorPoint = Vector2.new(0.5, 0.5)
+FPSText.BackgroundTransparency = 1.000
+FPSText.Position = UDim2.new(0.5, 0, 0.5, 0)
+FPSText.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+FPSText.FontFace = Font.new(
+	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
+	Enum.FontWeight.Bold                          -- weight
+)
+FPSText.Text = "FPS: 120"
+FPSText.TextColor3 = Color3.fromRGB(235, 235, 255)
+FPSText.TextScaled = true
+FPSText.TextSize = 14.000
+FPSText.TextWrapped = true
+
+UIListLayout.Parent = PerfFrame
+UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.SpaceBetween
 
 HPFrame.Name = "HPFrame"
 HPFrame.Parent = KooScreen
-HPFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-HPFrame.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
+HPFrame.AnchorPoint = Vector2.new(0.5, 0)
+HPFrame.BackgroundColor3 = Color3.fromRGB(20, 18, 35)
+HPFrame.BackgroundTransparency = 0.040
 HPFrame.BorderSizePixel = 0
-HPFrame.Position = UDim2.new(0.5, 0, 0.150000006, 0)
-HPFrame.Size = UDim2.new(0, 377, 0, 136)
+HPFrame.Position = UDim2.new(0.5, 0, 0.0299999993, 0)
+HPFrame.Size = UDim2.new(0.187999994, 0, 0.140000001, 0)
+HPFrame.Visible = false
 
-UICorner.CornerRadius = UDim.new(0, 18)
-UICorner.Parent = HPFrame
+UICorner_3.CornerRadius = UDim.new(0, 18)
+UICorner_3.Parent = HPFrame
+
+UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(90, 60, 200)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 20, 45))}
+UIGradient_3.Rotation = 135
+UIGradient_3.Parent = HPFrame
 
 HPBar.Name = "HPBar"
 HPBar.Parent = HPFrame
-HPBar.BackgroundColor3 = Color3.fromRGB(26, 0, 0)
-HPBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HPBar.AnchorPoint = Vector2.new(0, 0.5)
+HPBar.BackgroundColor3 = Color3.fromRGB(45, 30, 30)
 HPBar.BorderSizePixel = 0
-HPBar.Position = UDim2.new(0.0778368264, 0, 0.400334865, 0)
-HPBar.Size = UDim2.new(0, 318, 0, 42)
+HPBar.Position = UDim2.new(0.0500000007, 0, 0.5, 0)
+HPBar.Size = UDim2.new(0.899999976, 0, 0.25999999, 0)
 
-UICorner_2.CornerRadius = UDim.new(0, 15)
-UICorner_2.Parent = HPBar
+UICorner_4.CornerRadius = UDim.new(0, 14)
+UICorner_4.Parent = HPBar
 
 HPFill.Name = "HPFill"
-HPFill.Parent = HPFrame
-HPFill.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
-HPFill.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HPFill.Parent = HPBar
+HPFill.AnchorPoint = Vector2.new(0, 0.5)
+HPFill.BackgroundColor3 = Color3.fromRGB(200, 40, 40)
 HPFill.BorderSizePixel = 0
-HPFill.Position = UDim2.new(0.0778368264, 0, 0.400334865, 0)
-HPFill.Size = UDim2.new(0, 153, 0, 42)
+HPFill.Position = UDim2.new(0, 0, 0.5, 0)
+HPFill.Size = UDim2.new(0.45, 0, 1, 0)
 
-UICorner_3.CornerRadius = UDim.new(0, 15)
-UICorner_3.Parent = HPFill
+UICorner_5.CornerRadius = UDim.new(0, 14)
+UICorner_5.Parent = HPFill
+
+UIGradient_4.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 80, 80)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(150, 10, 10))}
+UIGradient_4.Parent = HPFill
 
 HPF_Target.Name = "HPF_Target"
 HPF_Target.Parent = HPFrame
+HPF_Target.AnchorPoint = Vector2.new(0.5, 0)
 HPF_Target.BackgroundTransparency = 1.000
-HPF_Target.Position = UDim2.new(0.157953322, 0, 0.335468858, 0)
-HPF_Target.Size = UDim2.new(0.684350133, 0, -0.264705896, 0)
+HPF_Target.Position = UDim2.new(0.5, 0, 0.0799999982, 0)
+HPF_Target.Size = UDim2.new(0.899999976, 0, 0.219999999, 0)
 HPF_Target.FontFace = Font.new(
 	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
 	Enum.FontWeight.Bold                          -- weight
 )
-HPF_Target.Text = "Corrupted Korth"
-HPF_Target.TextColor3 = Color3.fromRGB(255, 255, 255)
-HPF_Target.TextSize = 24.000
+HPF_Target.Text = "Korth"
+HPF_Target.TextColor3 = Color3.fromRGB(245, 245, 255)
+HPF_Target.TextScaled = true
+HPF_Target.TextSize = 22.000
 HPF_Target.TextWrapped = true
-
-HPF_Distance.Name = "HPF_Distance"
-HPF_Distance.Parent = HPFrame
-HPF_Distance.BackgroundTransparency = 1.000
-HPF_Distance.Position = UDim2.new(0.0778368264, 0, 0.864880621, 0)
-HPF_Distance.Size = UDim2.new(0.843501329, 0, -0.132352948, 0)
-HPF_Distance.FontFace = Font.new(
-	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
-	Enum.FontWeight.Bold                          -- weight
-)
-HPF_Distance.Text = "Distance: 100m"
-HPF_Distance.TextColor3 = Color3.fromRGB(255, 255, 255)
-HPF_Distance.TextScaled = true
-HPF_Distance.TextSize = 14.000
-HPF_Distance.TextWrapped = true
 
 HPF_Health.Name = "HPF_Health"
 HPF_Health.Parent = HPFrame
+HPF_Health.AnchorPoint = Vector2.new(0, 0.5)
 HPF_Health.BackgroundTransparency = 1.000
-HPF_Health.Position = UDim2.new(0.109667063, 0, 0.62223357, 0)
-HPF_Health.Size = UDim2.new(0.787798405, 0, -0.132352948, 0)
-HPF_Health.FontFace = Font.new(
-	"rbxasset://fonts/families/FredokaOne.json", -- built-in font path
-	Enum.FontWeight.Bold                          -- weight
-)
-HPF_Health.Text = "HP 1000/1000 (100%)"
-HPF_Health.TextColor3 = Color3.fromRGB(255, 255, 255)
+HPF_Health.Position = UDim2.new(0.0928340703, 0, 0.5, 0)
+HPF_Health.Size = UDim2.new(0.839999974, 0, 0.180000007, 0)
+HPF_Health.Font = Enum.Font.GothamMedium
+HPF_Health.Text = "HP 100000 / 100000 (100%)"
+HPF_Health.TextColor3 = Color3.fromRGB(210, 210, 230)
 HPF_Health.TextScaled = true
 HPF_Health.TextSize = 14.000
 HPF_Health.TextWrapped = true
 HPF_Health.TextXAlignment = Enum.TextXAlignment.Left
 
-UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 10, 70)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 0, 35))}
-UIGradient.Rotation = 135
-UIGradient.Parent = HPFrame
+HPF_Distance.Name = "HPF_Distance"
+HPF_Distance.Parent = HPFrame
+HPF_Distance.AnchorPoint = Vector2.new(0.5, 1)
+HPF_Distance.BackgroundTransparency = 1.000
+HPF_Distance.Position = UDim2.new(0.5, 0, 0.899999976, 0)
+HPF_Distance.Size = UDim2.new(0.879999995, 0, 0.150000006, 0)
+HPF_Distance.Font = Enum.Font.GothamMedium
+HPF_Distance.Text = "Distance: 100m"
+HPF_Distance.TextColor3 = Color3.fromRGB(170, 170, 210)
+HPF_Distance.TextScaled = true
+HPF_Distance.TextSize = 14.000
+HPF_Distance.TextWrapped = true
 
 local currentTween = nil
 local function UpdateHealthFrame()
     if not nearest then
-        KooScreen.Enabled = false
+        HPFrame.Visible = false
         return
     end
 
-    KooScreen.Enabled = true
+    HPFrame.Visible = true
     -- Target Name
     HPF_Target.Text = nearest.Name
 
@@ -344,7 +438,8 @@ local function UpdateHealthFrame()
 
         -- Update HP Fill
         local fillScale = math.clamp(hp / maxHealth, 0, 1)
-        local targetSize = UDim2.new(fillScale * 0.8435, 0, 0, 42)
+        local targetSize = UDim2.fromScale(fillScale, 1) -- full height, scaled X
+
         if currentTween then currentTween:Cancel() end
         currentTween = TweenService:Create(HPFill, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize})
         currentTween:Play()
@@ -356,7 +451,8 @@ local function UpdateHealthFrame()
 
         -- Update HP Fill
         local fillScale = math.clamp(hp / maxH, 0, 1)
-        local targetSize = UDim2.new(fillScale * 0.8435, 0, 0, 42)
+        local targetSize = UDim2.fromScale(fillScale, 1) -- full height, scaled X
+
         if currentTween then currentTween:Cancel() end
         currentTween = TweenService:Create(HPFill, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize})
         currentTween:Play()
@@ -364,6 +460,17 @@ local function UpdateHealthFrame()
         HPF_Health.Text = "HP N/A"
         HPFill.Size = UDim2.new(0, 0, 0, 42)
     end
+end
+local fpsSmooth = 60 -- initial guess
+local function UpdatePerformance(dt)
+    -- Update Ping
+    local ping = LocalPlayer:GetNetworkPing() * 1000 -- convert to ms
+    PingText.Text = string.format("Ping: %d ms", ping)
+
+    -- Update FPS
+    local fps = 1 / dt
+    fpsSmooth = fpsSmooth * 0.9 + fps * 0.1
+    FPSText.Text = string.format("FPS: %d", math.floor(fpsSmooth))
 end
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
@@ -481,7 +588,7 @@ return function(Window, Library)
         KA_Toggle_G += 1
         local myG = KA_Toggle_G
         if not Value then
-            if KooScreen then KooScreen.Enabled = false end
+            if HPFrame then HPFrame.Visible = false end
             return
         end
         task.spawn(function()
@@ -743,6 +850,7 @@ return function(Window, Library)
     local worker = Worker.new()
     worker:Start(RunService.Heartbeat:Connect(function(delta_time)
         nearest = GetNear(targets)
+        UpdatePerformance(delta_time)
         if Toggles.KA_Toggle.Value then
             -- Do KillAura
             UpdateHealthFrame()
@@ -786,7 +894,10 @@ return function(Window, Library)
             highlight = nil
         end
 
-        KooScreen:Destroy()
+        if KooScreen then
+            KooScreen:Destroy()
+            KooScreen = nil
+        end
         OpenRings_G = false
         OpenChest_G = false
         KA_Toggle_G = nil
