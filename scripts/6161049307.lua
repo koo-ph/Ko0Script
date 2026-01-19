@@ -7,7 +7,20 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Remotes = ReplicatedStorage:WaitForChild("remotes", 1)
-
+local PlayerData
+task.spawn(function()
+    while not PlayerData do
+        local PlayerDataPath = ReplicatedStorage:FindFirstChild("plrData")
+        if PlayerDataPath then
+            local ok, result = pcall(require, PlayerDataPath)
+            if ok then
+                PlayerData = result
+                break
+            end
+        end
+        task.wait(1) -- retry every second
+    end
+end)
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
 -- =================================================================== KILL AURA =================================================================== --
@@ -588,25 +601,92 @@ return function(Window, Library)
             end)
         end,
     })
+    Main_Utility:AddDivider("")
+    local OpenChest_G = false
     Main_Utility:AddButton("Open All Chest", function()
+        -- guard: prevent multiple spawns
+        if OpenChest_G then return end
+        OpenChest_G = true
+
         local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
         local gameUI = playerGui and playerGui:FindFirstChild("gameUI")
         local armory = gameUI and gameUI:FindFirstChild("armory")
         local inventory = armory and armory:FindFirstChild("inventory")
         local clip = inventory and inventory:FindFirstChild("clip")
         local loots = clip and clip:FindFirstChild("Loot")
-
-        if not loots then return end
-        for i=1, 100 do
-            for _, loot in ipairs(loots:GetChildren()) do
-                local args = {
-                    loot.Name,
-                    1
-                }
-                Remotes:WaitForChild("openLoot"):InvokeServer(unpack(args))
-            end
+        local openLoot = Remotes:FindFirstChild("openLoot")
+        if not loots or not openLoot then
+            OpenChest_G = false
+            return
         end
+
+        task.spawn(function()
+            while true do
+                local hasLoot = false
+                for _, loot in ipairs(loots:GetChildren()) do
+                    if loot:FindFirstChild("copies") then
+                        hasLoot = true
+                        local str_amount = loot.copies.Text
+                        local amount = tonumber(str_amount) or 1
+                        openLoot:InvokeServer(loot.Name, amount)
+                    end
+                end
+
+                if not hasLoot then
+                    OpenChest_G = false -- release guard when finished
+                    break
+                end
+
+                task.wait(0.5) -- pacing
+            end
+        end)
     end)
+
+    local OpenRings_G = false
+    Main_Utility:AddButton("Open All Rings", function()
+        -- 🔒 HARD LOCK
+        if OpenRings_G then return end
+        OpenRings_G = true
+
+        if not PlayerData then
+            OpenRings_G = false
+            return
+        end
+
+        local unveilRing = Remotes:FindFirstChild("unveilRing")
+        if not unveilRing then
+            OpenRings_G = false
+            return
+        end
+
+        task.spawn(function()
+            -- Open normal rings
+            while true do
+                local normal = PlayerData:GetValue(LocalPlayer, "Rings")
+                if not normal or normal <= 0 then
+                    break
+                end
+
+                unveilRing:InvokeServer("Normal")
+                task.wait(0.25)
+            end
+
+            -- Open super rings
+            while true do
+                local super = PlayerData:GetValue(LocalPlayer, "SuperRings")
+                if not super or super <= 0 then
+                    break
+                end
+
+                unveilRing:InvokeServer("Super")
+                task.wait(0.25)
+            end
+
+            -- 🔓 UNLOCK ONLY AFTER EVERYTHING FINISHES
+            OpenRings_G = false
+        end)
+    end)
+
 -- ================================================================ Main_Priority =================================================================== --
     for ability, name in pairs(Abilities) do
         AbilitySliders[ability] = Main_Priority:AddSlider(ability, {
