@@ -480,7 +480,10 @@ return function(Window, Library)
     Callback = function(Value)
         KA_Toggle_G += 1
         local myG = KA_Toggle_G
-        if not Value then KooScreen.Enabled = false return end
+        if not Value then
+            if KooScreen then KooScreen.Enabled = false end
+            return
+        end
         task.spawn(function()
             while Toggles.KA_Toggle.Value and KA_Toggle_G == myG do
                 for target in pairs(targets) do
@@ -601,7 +604,7 @@ return function(Window, Library)
             end)
         end,
     })
-    Main_Utility:AddDivider("")
+    Main_Utility:AddDivider("Inventory")
     local OpenChest_G = false
     Main_Utility:AddButton("Open All Chest", function()
         -- guard: prevent multiple spawns
@@ -621,7 +624,7 @@ return function(Window, Library)
         end
 
         task.spawn(function()
-            while true do
+            while true and OpenChest_G do
                 local hasLoot = false
                 for _, loot in ipairs(loots:GetChildren()) do
                     if loot:FindFirstChild("copies") then
@@ -661,7 +664,7 @@ return function(Window, Library)
 
         task.spawn(function()
             -- Open normal rings
-            while true do
+            while true and OpenRings_G do
                 local normal = PlayerData:GetValue(LocalPlayer, "Rings")
                 if not normal or normal <= 0 then
                     break
@@ -672,7 +675,7 @@ return function(Window, Library)
             end
 
             -- Open super rings
-            while true do
+            while true and OpenRings_G do
                 local super = PlayerData:GetValue(LocalPlayer, "SuperRings")
                 if not super or super <= 0 then
                     break
@@ -778,8 +781,14 @@ return function(Window, Library)
 -- ===================================================================== UNLOAD ======================================================================= --
     Library:OnUnload(function()
         worker:StopAll()
-        highlight:Destroy()
+        if highlight then
+            highlight:Destroy()
+            highlight = nil
+        end
+
         KooScreen:Destroy()
+        OpenRings_G = false
+        OpenChest_G = false
         KA_Toggle_G = nil
     end)
 end
