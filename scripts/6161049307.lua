@@ -53,8 +53,8 @@ end
 for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
     if inst.Name == "LocalKorth" then continue end
     if not inst:IsDescendantOf(Workspace) then continue end
-    local maxHealth = instance:GetAttribute("MaxHealth")
-    local maxHealthChild = instance:FindFirstChild("MaxHealth")
+    local maxHealth = inst:GetAttribute("MaxHealth")
+    local maxHealthChild = inst:FindFirstChild("MaxHealth")
         -- Skip if neither exists
     if maxHealth == nil and maxHealthChild == nil then
         return
