@@ -462,9 +462,9 @@ return function(Window, Library)
     local Main = Window:AddTab("Main", "house")
     local Main_Combat = Main:AddLeftGroupbox("Combat", "swords")
     local Main_Movement = Main:AddLeftGroupbox("Movement", "footprints")
+    local Main_Priority = Main:AddLeftGroupbox("Priority", "circle-alert")
     local Main_Visual = Main:AddRightGroupbox("Visual", "eye")
     local Main_Utility = Main:AddRightGroupbox("Utility", "target")
-    local Main_Priority = Main:AddRightGroupbox("Priority", "circle-alert")
 -- ================================================================== Main_Combat =================================================================== --
     local KA_Toggle_G = 0
     Main_Combat:AddToggle("KA_Toggle", {
