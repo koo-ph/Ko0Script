@@ -57,7 +57,7 @@ for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
     local maxHealthChild = inst:FindFirstChild("MaxHealth")
         -- Skip if neither exists
     if maxHealth == nil and maxHealthChild == nil then
-        return
+        continue
     end
     targets[inst] = true
 end
