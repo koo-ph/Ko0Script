@@ -367,16 +367,6 @@ G2L["16"].Visible = needKey
 
 if not needKey then
     G2L["c"].Visible = true
-    local totalTime = 1.5
-    local steps = 10
-    local stepTime = totalTime / steps
-    setProgress(0)
-    -- loop through 10 steps
-    for i = 1, steps do
-        setProgress(i / steps)   -- progress goes 0.1, 0.2, ... 1.0
-        task.wait(stepTime)      -- wait 0.15s each step
-    end
-
     loadHub()
 else
     G2L["12"].FocusLost:Connect(function(enterPressed)
