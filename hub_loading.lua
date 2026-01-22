@@ -360,7 +360,7 @@ G2L["14"].MouseButton1Click:Connect(function()
     end
 end)
 
-local needKey = true
+local needKey = false
 G2L["14"].Visible = needKey
 G2L["12"].Visible = needKey
 G2L["16"].Visible = needKey
