@@ -120,7 +120,7 @@ end
 local function GetEnemies()
     for _, inst in ipairs(CollectionService:GetTagged("enemy")) do
         if inst.Name == "LocalKorth" then continue end
-        if not inst:IsDescendantOf(Workspace) then continue end
+        if not inst:IsDescendantOf(workspace) then continue end
         local maxHealth = inst:GetAttribute("MaxHealth")
         local maxHealthChild = inst:FindFirstChild("MaxHealth")
             -- Skip if neither exists
@@ -504,6 +504,61 @@ end
         gameEndVote:FireServer("replay")
     end
 
+    local function NearestWatchdog()
+        local currentTarget = nil
+        local currentHealthObj = nil
+        local lastHealth = nil
+        local lastChange = os.clock()
+
+        local function killLocal()
+            local char = LocalPlayer.Character
+            if not char then return end
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.Health = 0
+            end
+        end
+
+        return function(nearest)
+            local now = os.clock()
+
+            -- New real target appeared
+            if nearest and nearest ~= currentTarget then
+                currentTarget = nearest
+                currentHealthObj = nil
+                lastHealth = nil
+                lastChange = now
+            end
+
+            -- Try to bind health if we have a target
+            if currentTarget then
+                if not currentHealthObj or currentHealthObj.Parent ~= currentTarget then
+                    local h = currentTarget:FindFirstChild("Health")
+                    if h and h:IsA("ValueBase") then
+                        currentHealthObj = h
+                        lastHealth = h.Value
+                        lastChange = now
+                    end
+                end
+            end
+
+            -- Track health changes
+            if currentHealthObj then
+                local v = currentHealthObj.Value
+                if v ~= lastHealth then
+                    lastHealth = v
+                    lastChange = now
+                end
+            end
+
+            -- Timeout if no progress for 15s (even if nearest is nil)
+            if now - lastChange >= 15 then
+                killLocal()
+                lastChange = now -- prevent spam
+            end
+        end
+    end
+    local NWatchdog = NearestWatchdog()
 -- ================================================================================================================================================= --
 -- ================================================================================================================================================= --
 -- ================================================================== HIGHLIGHT ==================================================================== --
@@ -946,11 +1001,11 @@ end
         prompt.Enabled = true
     end
 
-    local function AutoClaimOminous()
+    local function AutoClaimOminous(tpf_toggle)
         local function cleanup()
             TeleportController:Release("Ominous")
         end
-        if nearest then cleanup() return end
+        if nearest and tpf_toggle then cleanup() return end
         local character = LocalPlayer.Character
         if not character then return end
 
@@ -1350,7 +1405,7 @@ return function(Window, Library)
 
             task.spawn(function()
                 while Toggles.ACO_Toggle.Value and myG == ACO_Toggle_G do
-                    AutoClaimOminous()
+                    AutoClaimOminous(Toggles.TPF_Toggle.Value)
                     task.wait(0.01)
                     if isOminousClaim then
                         Toggles.ACO_Toggle:SetValue(false)
@@ -1417,6 +1472,9 @@ return function(Window, Library)
         UpdatePerformance(delta_time)
         UpdateHealthFrame()
         GetEnemies()
+        if Toggles.TPF_Toggle.Value then
+            NWatchdog(nearest)
+        end
         if Toggles.TPF_Toggle.Value and CurrentFarmZone then
             if nearest then
                 if IsEnemyInZone(nearest, CurrentFarmZone) then
